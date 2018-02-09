@@ -22,8 +22,6 @@ public class Maze {
 				counter++;
 			}
 		}
-		
-		generateMaze();
 	}
 	
 	/**
@@ -67,6 +65,18 @@ public class Maze {
 				System.out.print(board[i][j].toString());
 			}
 			System.out.println();
+		}
+	}
+	
+	/**
+	 * @param endRow	index of end state
+	 * @param endCol	index of end state
+	 */
+	public void calculateHeuristic(int endRow, int endCol) {
+		for(int i = 0; i < board.length; i++) {
+			for(int j = 0; j < board[0].length; j++) {
+				board[i][j].hValue = Math.abs(i - endRow) + Math.abs( j - endCol);
+			}
 		}
 	}
 }

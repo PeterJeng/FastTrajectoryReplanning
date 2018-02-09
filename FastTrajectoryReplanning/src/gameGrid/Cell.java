@@ -11,11 +11,11 @@ package gameGrid;
 public class Cell {
 	int key; 	//"name" of the node
 	boolean state; //blocked or unblocked
-	boolean visited; //visited or unvisited
+	boolean visited; //visited or unvisited ON PAUSE
+	int hValue, gValue, fValue;
 	
 	public Cell() {
-		this.state = false;
-		this.visited = false;
+		this.state = false;		
 	}	
 	
 	/**
