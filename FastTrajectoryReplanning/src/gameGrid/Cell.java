@@ -1,13 +1,17 @@
 package gameGrid;
 
 /**
- * Individual representation of the cells. A cell will have the properties 
- * @author Peter
- *
+ * Individual representation of the cells. 
+ * 
+ * Authors: Peter Jeng and Seerat Aziz
+ * Homework Assignment 1
+ * Introduction to Artificial Intelligence
+ * Spring 2018
  */
 public class Cell {
-	boolean state;
-	boolean visited;
+	int key; 	//"name" of the node
+	boolean state; //blocked or unblocked
+	boolean visited; //visited or unvisited
 	
 	public Cell() {
 		this.state = false;

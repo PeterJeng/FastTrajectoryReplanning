@@ -2,8 +2,11 @@ package gameGrid;
 
 /**
  * Class for testing purpose
- * @author Peter
- *
+ * 
+ * Authors: Peter Jeng and Seerat Aziz
+ * Homework Assignment 1
+ * Introduction to Artificial Intelligence
+ * Spring 2018
  */
 public class TestClass {
 
