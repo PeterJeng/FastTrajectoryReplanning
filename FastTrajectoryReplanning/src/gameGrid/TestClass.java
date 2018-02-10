@@ -11,7 +11,7 @@ package gameGrid;
 public class TestClass {
 
 	public static void main(String[] args) {
-		Maze maze = new Maze();
+		/*Maze maze = new Maze();
 		maze.generateMaze();
 		
 		maze.calculateHeuristic(9, 9);
@@ -24,7 +24,27 @@ public class TestClass {
 			}
 			System.out.println();
 		}
-
-	}
-
+	*/
+		Cell firstCell = new Cell();
+		Cell secondCell = new Cell();
+		Cell thirdCell = new Cell();
+		Cell fourthCell = new Cell();
+		Cell fifthCell = new Cell();
+		
+		firstCell.key = 1;
+		secondCell.key = 2;
+		thirdCell.key = 3;
+		fourthCell.key = -1;
+		fifthCell.key = -3; 
+		
+		
+		BinaryHeap openlist = new BinaryHeap();
+		openlist.insertCell(firstCell);
+		openlist.insertCell(secondCell);
+		openlist.insertCell(thirdCell);
+		openlist.insertCell(fourthCell);
+		openlist.insertCell(fifthCell);
+		
+		openlist.printHeap();
+	}	
 }
