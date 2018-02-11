@@ -30,21 +30,28 @@ public class TestClass {
 		Cell thirdCell = new Cell();
 		Cell fourthCell = new Cell();
 		Cell fifthCell = new Cell();
+		Cell sixthCell = new Cell();
+		Cell seventhCell = new Cell();
 		
 		firstCell.key = 1;
 		secondCell.key = 2;
 		thirdCell.key = 3;
 		fourthCell.key = -1;
 		fifthCell.key = -3; 
+		sixthCell.key = 6;
+		seventhCell.key = 7;
 		
 		
 		BinaryHeap openlist = new BinaryHeap();
+		openlist.insertCell(sixthCell);
+		openlist.insertCell(seventhCell);
 		openlist.insertCell(firstCell);
 		openlist.insertCell(secondCell);
 		openlist.insertCell(thirdCell);
 		openlist.insertCell(fourthCell);
 		openlist.insertCell(fifthCell);
 		
+		openlist.deleteCell(seventhCell);
 		openlist.printHeap();
 	}	
 }

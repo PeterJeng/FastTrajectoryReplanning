@@ -23,33 +23,41 @@ package gameGrid;
 import java.util.ArrayList;
 
 public class BinaryHeap {
-	public ArrayList<Cell> binaryheap; 
-	
-	public BinaryHeap () {
-		binaryheap = new ArrayList<Cell>(5); //initial size of 5
+	public ArrayList<Cell> binaryheap;
+
+	public BinaryHeap() {
+		binaryheap = new ArrayList<Cell>(5); // initial size of 5
 	}
-	
+
 	public void insertCell(Cell x) {
-		this.binaryheap.add(x); //Cell added to end of array
-		
-		siftUp();
+		this.binaryheap.add(x); // Cell added to end of array
+
+		siftUp(x);
 	}
-	
-	/*
-	public void deleteCell(Cell x) { 
-		int ind = binaryheap.indexOf(x); 
-		Cell last = binaryheap.get(binaryheap.size()-1);
-		binaryheap.set(ind, last); //sets node to be deleted as last cell
-		this.binaryheap.remove(last); //deletes last cell 
+
+	public void deleteCell(Cell x) {
+		int ind = binaryheap.indexOf(x);
+		Cell last = binaryheap.get(binaryheap.size() - 1);
+		binaryheap.set(ind, last); // sets node to be deleted as last cell
+		this.binaryheap.remove(binaryheap.size() - 1); // deletes last cell
 		
+		//if we delete the last node in the array, do not shift
+		if(ind > binaryheap.size() - 1) {
+			return;
+		}
+
 		siftDown(binaryheap.get(ind));
+		
+		//special cases where a swapped node of last element after delete is smaller than parent. Resift
+		siftUp(binaryheap.get(ind));
 	}
-	*/
-	
-	private void siftUp() {
-		//need to change so that it orders list based on fValue
-		int cInd = binaryheap.size() - 1; //index of recently added element
-		int pInd = (cInd - 1)/2; //index of parent of recently added element
+
+	/**
+	 * TODO: order list based on fValue
+	 */
+	private void siftUp(Cell x) {
+		int cInd = binaryheap.indexOf(x); // index of recently added element
+		int pInd = (cInd - 1) / 2; // index of parent of recently added element
 		while (cInd > 0) {
 			Cell current = binaryheap.get(cInd);
 			Cell parent = binaryheap.get(pInd);
@@ -58,49 +66,60 @@ public class BinaryHeap {
 				binaryheap.set(pInd, current);
 			}
 			cInd = pInd;
-			pInd = (cInd - 1)/2; 
+			pInd = (cInd - 1) / 2;
 		}
 	}
-	
-	/*
+
+	/**
+	 * TODO: order list based on fValue
+	 */
 	private void siftDown(Cell x) {
-		//need to change so that it orders list based on fValue
 		int ind = binaryheap.indexOf(x);
-		int l = 2*ind + 1;
-		int r = 2*ind + 2;
+		int l = 2 * ind + 1;
+		int r = 2 * ind + 2;
+		
+		//leaf nodes, do not shift
+		if (l > binaryheap.size() - 1 && r > binaryheap.size() - 1) {
+			return;
+		}
+		
 		while (true) {
 			Cell left = binaryheap.get(l);
 			Cell right = new Cell();
 			Cell min = new Cell();
-			int min_ind; 
-			if (r<binaryheap.size()) {
+			int min_ind;
+			if (r < binaryheap.size()) {
 				right = binaryheap.get(r);
 				min = (left.key < right.key) ? left : right;
-			}
-			else {
+			} else {
 				min = left;
 			}
-			
+
 			min_ind = binaryheap.indexOf(min);
-			
+
+			//swap parent and child if necessary
 			if (min.key < x.key) {
 				binaryheap.set(ind, min);
 				binaryheap.set(min_ind, x);
 			}
-			
+
+			//reset the indexes
 			ind = min_ind;
-			l = 2*ind + 1;
-			r = 2*ind + 2; 
+			l = 2 * ind + 1;
+			r = 2 * ind + 2;
+			
+			//check to see if we are at leaf nodes
+			if (l > binaryheap.size() - 1 && r > binaryheap.size() - 1) {
+				return;
+			}
 		}
-		
+
 	}
-	*/
 	
 	public void printHeap() {
 		for (int i = 0; i < binaryheap.size(); i++) {
-			Cell temp = binaryheap.get(i);
-			System.out.println("Key: " + temp.key);
-			//can expand to print out more properties later
+			System.out.println("Key: " + binaryheap.get(i).key);
+			// can expand to print out more properties later
 		}
 	}
 }
