@@ -9,10 +9,12 @@ package gameGrid;
  * Spring 2018
  */
 public class Cell {
-	int key; 	//"name" of the node
+	int key; 	//"name" of the node, this attribute can be removed later, just for testing??
 	boolean state; //blocked or unblocked
 	boolean visited; //visited or unvisited ON PAUSE
 	int hValue, gValue, fValue;
+	Cell parent; //to keep track of parent of the cell and make it easier to backtrack??
+	int row, col; //to keep track of Cell's location within the grid world
 	
 	public Cell() {
 		this.state = false;		

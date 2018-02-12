@@ -16,7 +16,7 @@ public class PerceivedMaze extends Maze{
 	}
 	
 	
-	public void move(int row, int col) {
+	public void move() {
 		this.traveledPathCost++;
 	}
 	

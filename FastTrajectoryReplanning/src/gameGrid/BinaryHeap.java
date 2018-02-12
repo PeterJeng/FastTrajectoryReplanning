@@ -23,16 +23,17 @@ package gameGrid;
 import java.util.ArrayList;
 
 public class BinaryHeap {
-	public ArrayList<Cell> binaryheap;
+	private ArrayList<Cell> binaryheap;
 
 	public BinaryHeap() {
 		binaryheap = new ArrayList<Cell>(5); // initial size of 5
 	}
 
 	public void insertCell(Cell x) {
-		this.binaryheap.add(x); // Cell added to end of array
-
-		siftUp(x);
+		if (!this.binaryheap.contains(x)) { //to prevent duplicates
+			this.binaryheap.add(x); // Cell added to end of array
+			siftUp(x);
+		}
 	}
 
 	public void deleteCell(Cell x) {
@@ -52,16 +53,13 @@ public class BinaryHeap {
 		siftUp(binaryheap.get(ind));
 	}
 
-	/**
-	 * TODO: order list based on fValue
-	 */
 	private void siftUp(Cell x) {
 		int cInd = binaryheap.indexOf(x); // index of recently added element
 		int pInd = (cInd - 1) / 2; // index of parent of recently added element
 		while (cInd > 0) {
 			Cell current = binaryheap.get(cInd);
 			Cell parent = binaryheap.get(pInd);
-			if (current.key < parent.key) {
+			if (current.fValue < parent.fValue) {
 				binaryheap.set(cInd, parent);
 				binaryheap.set(pInd, current);
 			}
@@ -70,9 +68,6 @@ public class BinaryHeap {
 		}
 	}
 
-	/**
-	 * TODO: order list based on fValue
-	 */
 	private void siftDown(Cell x) {
 		int ind = binaryheap.indexOf(x);
 		int l = 2 * ind + 1;
@@ -90,7 +85,7 @@ public class BinaryHeap {
 			int min_ind;
 			if (r < binaryheap.size()) {
 				right = binaryheap.get(r);
-				min = (left.key < right.key) ? left : right;
+				min = (left.fValue < right.fValue) ? left : right;
 			} else {
 				min = left;
 			}
@@ -98,7 +93,7 @@ public class BinaryHeap {
 			min_ind = binaryheap.indexOf(min);
 
 			//swap parent and child if necessary
-			if (min.key < x.key) {
+			if (min.fValue < x.fValue) {
 				binaryheap.set(ind, min);
 				binaryheap.set(min_ind, x);
 			}
@@ -116,10 +111,19 @@ public class BinaryHeap {
 
 	}
 	
+	public void clearHeap() {
+		this.binaryheap.clear();
+	}
+	
+	public Cell getCell(int x) {
+		return this.binaryheap.get(x);
+	}
+	
 	public void printHeap() {
 		for (int i = 0; i < binaryheap.size(); i++) {
 			System.out.println("Key: " + binaryheap.get(i).key);
 			// can expand to print out more properties later
 		}
+		System.out.print("\n");
 	}
 }

@@ -12,7 +12,7 @@ public class Maze {
 	public Cell[][] board;
 	
 	public Maze() {
-		this.board = new Cell[10][10];
+		this.board = new Cell[5][5];
 		int counter = 1; 
 		
 		for(int i = 0; i < board.length; i++) {
@@ -20,6 +20,8 @@ public class Maze {
 				board[i][j] = new Cell();
 				board[i][j].key = counter;
 				counter++;
+				board[i][j].row = i; //to make it easier to keep track of indices
+				board[i][j].col = j; //and Cell's location in board when in binaryheap etc. 
 			}
 		}
 	}
@@ -60,8 +62,10 @@ public class Maze {
 	public void calculateHeuristic(int endRow, int endCol) {
 		for(int i = 0; i < board.length; i++) {
 			for(int j = 0; j < board[0].length; j++) {
-				board[i][j].hValue = Math.abs(i - endRow) + Math.abs( j - endCol);
-				//calculates Manhattan distance between current state to goal state
+				if (board[i][j].state == false)
+					board[i][j].hValue = Math.abs(i - endRow) + Math.abs( j - endCol);
+				else //if cell is blocked, then hValue is infinity bc no way to reach goal from here
+					board[i][j].hValue = 1000000000; //idk what the java constant for infinity is 
 			}
 		}
 	}
