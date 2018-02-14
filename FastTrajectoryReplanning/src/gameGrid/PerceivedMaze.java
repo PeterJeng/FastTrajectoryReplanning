@@ -10,9 +10,13 @@ package gameGrid;
  */
 public class PerceivedMaze extends Maze{
 	public int traveledPathCost;
+	Cell start, end, current;
 	
 	public PerceivedMaze() {
 		super();	
+		this.current = board[0][0];
+		this.start = board[0][0];
+		this.end = board[board.length - 1][board.length - 1];
 	}
 	
 	
@@ -26,4 +30,5 @@ public class PerceivedMaze extends Maze{
 	public void update() {
 		
 	}
+
 }

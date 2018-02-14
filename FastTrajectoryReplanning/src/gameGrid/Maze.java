@@ -27,7 +27,6 @@ public class Maze {
 	}
 	
 	/**
-	 * TODO: Implement a DFS algorithm???
 	 * Currently using a random number generator to determine if the cell is blocked or unblocked
 	 */
 	public void generateMaze() {
@@ -41,6 +40,10 @@ public class Maze {
 				}
 			}
 		}
+		
+		//set the start and end cell as unblocked
+		board[0][0].state = false;
+		board[board.length - 1][board.length - 1].state = false;
 	}
 	
 	/**
@@ -64,8 +67,8 @@ public class Maze {
 			for(int j = 0; j < board[0].length; j++) {
 				if (board[i][j].state == false)
 					board[i][j].hValue = Math.abs(i - endRow) + Math.abs( j - endCol);
-				else //if cell is blocked, then hValue is infinity bc no way to reach goal from here
-					board[i][j].hValue = 1000000000; //idk what the java constant for infinity is 
+				else //if cell is blocked, then hValue is negative bc no way to reach goal from here
+					board[i][j].hValue = -1; 
 			}
 		}
 	}
