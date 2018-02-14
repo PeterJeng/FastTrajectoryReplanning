@@ -58,7 +58,10 @@ public class TestClass {
 	*/
 		//for testing my implementation of aStar() - Seerat (adaptiveastar class)
 		Maze maze1 = new Maze();
+		
 		maze1.generateMaze();
+		maze1.board[3][4].state = true;
+		maze1.board[4][3].state = true; 
 		adaptiveastar testStar = new adaptiveastar();
 		maze1.printMaze();
 		testStar.adaptiveSearch(maze1, 0, 0, 4, 4);

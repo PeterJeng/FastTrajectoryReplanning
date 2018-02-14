@@ -38,9 +38,9 @@ public class adaptiveastar {
 			right = x.board[sRow][sCol+1];
 			bottom = x.board[sRow+1][sCol];
 			right.gValue = robotMaze.traveledPathCost+1; 
-			bottom.gValue = robotMaze.traveledPathCost+1;
-			right.parent = start;
-			bottom.parent = start; 
+			bottom.gValue = robotMaze.traveledPathCost+1; 
+			//right.parent = start;
+			//bottom.parent = start; 
 			
 			right.fValue = right.gValue + right.hValue;
 			bottom.fValue = bottom.gValue + bottom.hValue; 
@@ -54,8 +54,8 @@ public class adaptiveastar {
 			bottom = x.board[sRow+1][sCol];
 			left.gValue = robotMaze.traveledPathCost+1;
 			bottom.gValue = robotMaze.traveledPathCost+1;
-			left.parent = start;
-			bottom.parent = start; 
+			//left.parent = start;
+			//bottom.parent = start; 
 			
 			bottom.fValue = bottom.gValue + bottom.hValue;
 			left.fValue = left.gValue + left.hValue; 
@@ -69,8 +69,8 @@ public class adaptiveastar {
 			top = x.board[sRow-1][sCol];
 			right.gValue = robotMaze.traveledPathCost+1; 
 			top.gValue = robotMaze.traveledPathCost+1; 
-			right.parent = start;
-			top.parent = start; 
+			//right.parent = start;
+			//top.parent = start; 
 			
 			right.fValue = right.gValue + right.hValue;
 			top.fValue = top.gValue + top.hValue; 
@@ -84,8 +84,8 @@ public class adaptiveastar {
 			top = x.board[sRow-1][sCol];
 			left.gValue = robotMaze.traveledPathCost+1; 
 			top.gValue = robotMaze.traveledPathCost+1;
-			left.parent = start;
-			top.parent = start; 
+			//left.parent = start;
+			//top.parent = start; 
 			
 			left.fValue = left.gValue + left.hValue;
 			top.fValue = top.gValue + top.hValue;
@@ -101,9 +101,9 @@ public class adaptiveastar {
 			right.gValue = robotMaze.traveledPathCost+1; 
 			left.gValue = robotMaze.traveledPathCost+1;
 			bottom.gValue = robotMaze.traveledPathCost+1;
-			right.parent = start;
-			left.parent = start;
-			bottom.parent = start; 
+			//right.parent = start;
+			//left.parent = start;
+			//bottom.parent = start; 
 			
 			bottom.fValue = bottom.gValue + bottom.hValue; 
 			right.fValue = right.gValue + right.hValue;
@@ -121,9 +121,9 @@ public class adaptiveastar {
 			right.gValue = robotMaze.traveledPathCost+1; 
 			left.gValue = robotMaze.traveledPathCost+1;
 			top.gValue = robotMaze.traveledPathCost+1;
-			right.parent = start;
-			left.parent = start;
-			top.parent = start; 
+			//right.parent = start;
+			//left.parent = start;
+			//top.parent = start; 
 			
 			right.fValue = right.gValue + right.hValue;
 			left.fValue = left.gValue + left.hValue;
@@ -141,9 +141,9 @@ public class adaptiveastar {
 			right.gValue = robotMaze.traveledPathCost+1; 
 			top.gValue = robotMaze.traveledPathCost+1;
 			bottom.gValue = robotMaze.traveledPathCost+1;
-			right.parent = start;
-			top.parent = start;
-			bottom.parent = start; 
+			//right.parent = start;
+			//top.parent = start;
+			//bottom.parent = start; 
 			
 			bottom.fValue = bottom.gValue + bottom.hValue; 
 			right.fValue = right.gValue + right.hValue;
@@ -161,9 +161,9 @@ public class adaptiveastar {
 			left.gValue = robotMaze.traveledPathCost+1; 
 			top.gValue = robotMaze.traveledPathCost+1;
 			bottom.gValue = robotMaze.traveledPathCost+1;
-			left.parent = start;
-			top.parent = start;
-			bottom.parent = start; 
+			//left.parent = start;
+			//top.parent = start;
+			//bottom.parent = start; 
 			
 			bottom.fValue = bottom.gValue + bottom.hValue; 
 			left.fValue = left.gValue + left.hValue;
@@ -182,8 +182,8 @@ public class adaptiveastar {
 			left.gValue = robotMaze.traveledPathCost+1;
 			top.gValue = robotMaze.traveledPathCost+1; 
 			bottom.gValue = robotMaze.traveledPathCost+1; 
-			right.parent = start; left.parent = start;
-			top.parent = start; bottom.parent = start; 
+			//right.parent = start; left.parent = start;
+			//top.parent = start; bottom.parent = start; 
 			
 			bottom.fValue = bottom.gValue + bottom.hValue; 
 			right.fValue = right.gValue + right.hValue;
@@ -202,18 +202,21 @@ public class adaptiveastar {
 	//make it return indices of unvisited node 
 	public int[] backTrack(Maze x, Cell c) {
 		Cell unvisited = new Cell();
-		this.cellNeighbors(x, c.row, c.col); //openlist cell's neighbors
 		int[] result = null; //returns null array if no unvisited neighbors
-		for (int i = 0; i < this.openList.heapSize(); i++) {
-			if (!this.openList.getCell(i).visited) {
-				unvisited = openList.getCell(i); //picks closest unvisited cell
-				result = new int[2];
-				result[0] = unvisited.row;
-				result[1] = unvisited.col; 
- 				break;
+		while (c.parent != null) {
+			this.cellNeighbors(x, c.row, c.col); //openlist cell's neighbors
+			for (int i = 0; i < this.openList.heapSize(); i++) {
+				if (!this.openList.getCell(i).visited) {
+					unvisited = openList.getCell(i); //picks closest unvisited cell
+					result = new int[2];
+					result[0] = unvisited.row;
+					result[1] = unvisited.col; 
+	 				break;
+				}
 			}
+			this.openList.clearHeap(); //clears openlist
+			c = c.parent;
 		}
-		this.openList.clearHeap(); //clears openlist
 		return result; 
 	}
 	
@@ -243,15 +246,15 @@ public class adaptiveastar {
  	 			return nextNodeInd;
  			}
  			else {
- 				nextNodeInd = new int[2];
- 				nextNodeInd[0] = start.parent.row;
- 				nextNodeInd[1] = start.parent.col;
+ 				//nextNodeInd = new int[2];
+ 				//nextNodeInd[0] = start.parent.row;
+ 				//nextNodeInd[1] = start.parent.col;
  				return nextNodeInd;
  			}
  		}
  		
  		this.cellNeighbors(x, sRow, sCol); //updates openlist with neighbors
-		if (!openList.isHeapEmpty()) {
+		if (!openList.isHeapEmpty() && openList.heapSize()>1) { //openlist must have at least 2 Cells
 			nextNodeInd = new int[2];
 			robotMaze.move(); //move only if robot isn't blocked from all sides
 			openList.deleteCell(start); //deletes startnode
@@ -280,6 +283,8 @@ public class adaptiveastar {
 		x.board[gRow][gCol].state = false; //overrides if goal state is blocked
 		int[] result = this.aStar(x, sRow, sCol, gRow, gCol);
 		while (result != null) {
+			x.board[result[0]][result[1]].parent = x.board[sRow][sCol];
+			sRow = result[0]; sCol = result[1]; 
 			result = this.aStar(x, result[0], result[1], gRow, gCol);
 			if (result == null) {
 				System.out.println("No solution found for this maze");
