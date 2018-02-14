@@ -30,9 +30,12 @@ public class BinaryHeap {
 	}
 
 	public void insertCell(Cell x) {
-		if (!this.binaryheap.contains(x)) { //to prevent duplicates
+		if (x.state == false) { //to prevent blocked cells from being added
 			this.binaryheap.add(x); // Cell added to end of array
 			siftUp(x);
+		}
+		else {
+			return; //if cell is blocked then it is not added to open list
 		}
 	}
 
@@ -118,6 +121,14 @@ public class BinaryHeap {
 	public Cell getCell(int x) {
 		return this.binaryheap.get(x);
 	}
+	
+	public boolean isHeapEmpty() {
+		return this.binaryheap.isEmpty(); 
+	}
+	
+	public int heapSize() {
+		return this.binaryheap.size();
+	}	
 	
 	public void printHeap() {
 		for (int i = 0; i < binaryheap.size(); i++) {

@@ -13,9 +13,9 @@ import java.util.LinkedList;
 
 //all properties are public for testing purposes
 public class adaptiveastar {
-	PerceivedMaze robotMaze;	//what robot sees
-	BinaryHeap openList; 		//A*'s open list of cells to be expanded
-	LinkedList<Cell> closedList; 	//A*'s list of explored cells 
+	private PerceivedMaze robotMaze;	//what robot sees
+	private BinaryHeap openList; 		//A*'s open list of cells to be expanded
+	private LinkedList<Cell> closedList; 	//A*'s list of explored cells 
 	
 	public adaptiveastar () {
 		robotMaze = new PerceivedMaze();
@@ -23,24 +23,10 @@ public class adaptiveastar {
 		closedList = new LinkedList<Cell>(); 
 	}
 	
-	/*
-	 * implements one iteration of A*
-	 * returns indices of Cell that it was going to expand next
-	 * TO-DO:
-	 * 1. Update perceived maze
-	 * 2. Make sure blocked Cells are not chosen in trajectory
-	 * 3. How to determine if there is no unblocked path to goal
-	 * 4. Add Tie-breaking component that is needed (if same fVal, pick node
-	 * 		with larger gVal)
-	 */
-	public int[] aStar(Maze x, int sRow, int sCol, int gRow, int gCol) {
-		int[] nextNodeInd = {0,0};
-		x.calculateHeuristic(gRow, gCol); //calculates distance from goal node from each node
-		//line 46 this will be moved to the adaptive part since it only has to be executed once
-		x.board[sRow][sCol].state = false; //overrides if start state is blocked
-		x.board[sRow][sCol].visited = true;  //since this cell will be expanded
- 		Cell start = x.board[sRow][sCol]; //stores start state
- 		openList.insertCell(start); //adds start state to open list if not present 
+	//helper function that finds the neighboring nodes of the current cell
+	//updates the openlist appropriately
+	public void cellNeighbors(Maze x, int sRow, int sCol) {
+		Cell start = x.board[sRow][sCol]; //stores start state
 		
 		Cell right = new Cell(); Cell left = new Cell(); 
 		Cell bottom = new Cell(); Cell top = new Cell();
@@ -94,7 +80,7 @@ public class adaptiveastar {
 		}
 		else if  (sRow == (x.board.length-1) && sCol == (x.board.length-1)) //bottom right corner
 		{
-			left = x.board[sRow][sCol+1];
+			left = x.board[sRow][sCol-1];
 			top = x.board[sRow-1][sCol];
 			left.gValue = robotMaze.traveledPathCost+1; 
 			top.gValue = robotMaze.traveledPathCost+1;
@@ -110,7 +96,7 @@ public class adaptiveastar {
 		else if (sRow == 0) //top edge
 		{
 			right = x.board[sRow][sCol+1];
-			left = x.board[sRow][sCol+1];
+			left = x.board[sRow][sCol-1];
 			bottom = x.board[sRow+1][sCol];
 			right.gValue = robotMaze.traveledPathCost+1; 
 			left.gValue = robotMaze.traveledPathCost+1;
@@ -130,7 +116,7 @@ public class adaptiveastar {
 		else if (sRow == (x.board.length-1)) //bottom edge
 		{
 			right = x.board[sRow][sCol+1];
-			left = x.board[sRow][sCol+1];
+			left = x.board[sRow][sCol-1];
 			top = x.board[sRow-1][sCol];
 			right.gValue = robotMaze.traveledPathCost+1; 
 			left.gValue = robotMaze.traveledPathCost+1;
@@ -169,7 +155,7 @@ public class adaptiveastar {
 		}
 		else if (sCol == (x.board.length-1)) //right edge
 		{
-			left = x.board[sRow][sCol+1];
+			left = x.board[sRow][sCol-1];
 			top = x.board[sRow-1][sCol];
 			bottom = x.board[sRow+1][sCol];
 			left.gValue = robotMaze.traveledPathCost+1; 
@@ -189,7 +175,7 @@ public class adaptiveastar {
 		}
 		else { //in the middle of the grid world
 			right = x.board[sRow][sCol+1];
-			left = x.board[sRow][sCol+1];
+			left = x.board[sRow][sCol-1];
 			top = x.board[sRow-1][sCol];
 			bottom = x.board[sRow+1][sCol];
 			right.gValue = robotMaze.traveledPathCost+1; 
@@ -209,22 +195,76 @@ public class adaptiveastar {
 			openList.insertCell(top);
 			openList.insertCell(bottom);
 		}
-		robotMaze.move();
-		openList.deleteCell(start); //deletes startnode
-		closedList.add(start); //adds start to closed linkedlist
-		
-		//Printing out Closed List
-		for (int i = 0; i < closedList.size(); i++) {
-			System.out.println("Key:" + closedList.get(i).key + " ");
+	}
+	
+	//to back track until an unvisited node is found 
+	//if no unvisited nodes then there is a dead end - IMPLEMENT
+	//make it return indices of unvisited node 
+	public int[] backTrack(Maze x, Cell c) {
+		Cell unvisited = new Cell();
+		this.cellNeighbors(x, c.row, c.col); //openlist cell's neighbors
+		int[] result = null; //returns null array if no unvisited neighbors
+		for (int i = 0; i < this.openList.heapSize(); i++) {
+			if (!this.openList.getCell(i).visited) {
+				unvisited = openList.getCell(i); //picks closest unvisited cell
+				result = new int[2];
+				result[0] = unvisited.row;
+				result[1] = unvisited.col; 
+ 				break;
+			}
 		}
-		
-		Cell first = openList.getCell(0);
-		nextNodeInd[0] = first.row;
-		nextNodeInd[1] = first.col;
-		openList.clearHeap(); //clears openlist for next iteration
-		//or clear openlist in the adaptiveSearch method???
-		
-		return nextNodeInd; 
+		this.openList.clearHeap(); //clears openlist
+		return result; 
+	}
+	
+	/*
+	 * implements one iteration of A*
+	 * returns indices of Cell that it was going to expand next
+	 * TO-DO:
+	 * 1. Update perceived maze
+	 * 2. Make sure blocked Cells are not chosen in trajectory - DONE 
+	 * 3. How to determine if there is no unblocked path to goal
+	 * 4. Add Tie-breaking component that is needed (if same fVal, pick node
+	 * 		with larger gVal)
+	 * 5. Need to implement back-tracking to visit unvisited nodes to prevent cycling between 
+	 *    two nodes - DONE?
+	 */
+	public int[] aStar(Maze x, int sRow, int sCol, int gRow, int gCol) {
+		int[] nextNodeInd = null;
+		x.board[sRow][sCol].visited = true;  //since this cell will be expanded
+ 		Cell start = x.board[sRow][sCol];
+ 		openList.insertCell(start); //adds start state to open list
+ 		
+ 		//if start cell is already in closed list, choose unvisited node 
+ 		if (closedList.contains(start)) {
+ 			nextNodeInd = this.backTrack(x, start);
+ 			if (nextNodeInd != null) {
+ 				closedList.add(start); 
+ 	 			return nextNodeInd;
+ 			}
+ 			else {
+ 				nextNodeInd = new int[2];
+ 				nextNodeInd[0] = start.parent.row;
+ 				nextNodeInd[1] = start.parent.col;
+ 				return nextNodeInd;
+ 			}
+ 		}
+ 		
+ 		this.cellNeighbors(x, sRow, sCol); //updates openlist with neighbors
+		if (!openList.isHeapEmpty()) {
+			nextNodeInd = new int[2];
+			robotMaze.move(); //move only if robot isn't blocked from all sides
+			openList.deleteCell(start); //deletes startnode
+			closedList.add(start); //adds start to closed linkedlist
+			Cell first = openList.getCell(0);
+			nextNodeInd[0] = first.row;
+			nextNodeInd[1] = first.col;
+			openList.clearHeap(); //clears openlist for next iteration
+			return nextNodeInd;
+		}
+		else {
+			return nextNodeInd; //returns null array if heap is empty (blocked all sides)
+		}
 	}
 
 	
@@ -235,7 +275,30 @@ public class adaptiveastar {
 	 * and updates perceived maze along the process
 	 */
 	public void adaptiveSearch(Maze x, int sRow, int sCol, int gRow, int gCol) {
-		
+		x.calculateHeuristic(gRow, gCol); //calculates distance from goal node from each node
+		x.board[sRow][sCol].state = false; //overrides if start state is blocked
+		x.board[gRow][gCol].state = false; //overrides if goal state is blocked
+		int[] result = this.aStar(x, sRow, sCol, gRow, gCol);
+		while (result != null) {
+			result = this.aStar(x, result[0], result[1], gRow, gCol);
+			if (result == null) {
+				System.out.println("No solution found for this maze");
+				for (int i = 0; i < closedList.size(); i++) {
+ 					System.out.println("Key:" + closedList.get(i).key + " ");
+ 				}
+ 				System.out.print("\n");
+				return; 
+			} else if (result[0] == gRow && result[1] == gCol) {
+				this.closedList.add(x.board[gRow][gCol]);
+				System.out.println("Solution found for this maze");
+				for (int i = 0; i < closedList.size(); i++) {
+ 					System.out.println("Key:" + closedList.get(i).key + " ");
+ 				}
+ 				System.out.print("\n");
+				return;
+			}
+		}
+		return;
 	}
 	
 }

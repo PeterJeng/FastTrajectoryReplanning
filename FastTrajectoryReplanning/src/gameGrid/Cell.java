@@ -11,13 +11,19 @@ package gameGrid;
 public class Cell {
 	int key; 	//"name" of the node, this attribute can be removed later, just for testing??
 	boolean state; //blocked or unblocked
-	boolean visited; //visited or unvisited ON PAUSE
+	boolean visited; //visited or unvisited ON PAUSE 
 	int hValue, gValue, fValue;
-	Cell parent; //to keep track of parent of the cell and make it easier to backtrack??
+	Cell parent; //to keep track of parent of the cell and make it easier to backtrack
 	int row, col; //to keep track of Cell's location within the grid world
 	
 	public Cell() {
-		this.state = false;		
+		this.state = false;	
+		this.hValue = 1000000000; //initialized to infinity
+		this.visited = false; 
+		this.fValue = 0; 
+		this.gValue = 0; 
+		this.row = this.col = this.key = 0;
+		this.parent = null; 
 	}	
 	
 	/**
