@@ -11,20 +11,35 @@ package gameGrid;
 public class TestClass {
 
 	public static void main(String[] args) {
-	/*	Maze maze = new Maze();
+		Maze maze = new Maze();
 		maze.generateMaze();
 		
 		maze.calculateHeuristic(9, 9);
 		
 		maze.printMaze();
 		
+		/*
 		for(int i = 0; i < maze.board.length; i++) {
 			for(int j = 0; j < maze.board[0].length; j++) {
 				System.out.print(maze.board[i][j].hValue + " ");
 			}
 			System.out.println();
 		}
-	*/
+		*/
+		
+		PerceivedMaze test = new PerceivedMaze();
+		
+		test.board = maze.board;
+		test.printMaze();
+		
+		RepeatedForwardAStar testAlgo = new RepeatedForwardAStar();
+		testAlgo.robotMaze = test;
+		
+		test.current = test.board[4][4];
+		
+		testAlgo.computePath();
+		
+	
 	/*
 		Cell firstCell = new Cell();
 		Cell secondCell = new Cell();
@@ -57,6 +72,7 @@ public class TestClass {
 		openlist.printHeap();
 	*/
 		//for testing my implementation of aStar() - Seerat (adaptiveastar class)
+		/*
 		Maze maze1 = new Maze();
 		
 		maze1.generateMaze();
@@ -65,5 +81,6 @@ public class TestClass {
 		adaptiveastar testStar = new adaptiveastar();
 		maze1.printMaze();
 		testStar.adaptiveSearch(maze1, 0, 0, 4, 4);
+		*/
 	}	
 }
