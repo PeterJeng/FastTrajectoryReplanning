@@ -16,7 +16,7 @@ public class TestClass {
 		
 		maze.calculateHeuristic(9, 9);
 		
-		maze.printMaze();
+		//maze.printMaze();
 		
 		/*
 		for(int i = 0; i < maze.board.length; i++) {
@@ -29,13 +29,12 @@ public class TestClass {
 		
 		PerceivedMaze test = new PerceivedMaze();
 		
-		test.board = maze.board;
+//		test.board = maze.board;
+		test.calculateHeuristic(4, 4);
 		test.printMaze();
 		
 		RepeatedForwardAStar testAlgo = new RepeatedForwardAStar();
 		testAlgo.robotMaze = test;
-		
-		test.current = test.board[4][4];
 		
 		testAlgo.computePath();
 		
