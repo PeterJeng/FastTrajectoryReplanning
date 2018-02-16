@@ -29,13 +29,14 @@ public class BinaryHeap {
 		binaryheap = new ArrayList<Cell>(5); // initial size of 5
 	}
 
-	public void insertCell(Cell x) {
+	public boolean insertCell(Cell x) {
 		if (x.state == false) { //to prevent blocked cells from being added
 			this.binaryheap.add(x); // Cell added to end of array
 			siftUp(x);
+			return true; //successful insert
 		}
 		else {
-			return; //if cell is blocked then it is not added to open list
+			return false; //if cell is blocked then it is not added to open list
 		}
 	}
 
@@ -62,7 +63,7 @@ public class BinaryHeap {
 		while (cInd > 0) {
 			Cell current = binaryheap.get(cInd);
 			Cell parent = binaryheap.get(pInd);
-			if (current.fValue < parent.fValue) {
+			if (current.hValue < parent.hValue) {
 				binaryheap.set(cInd, parent);
 				binaryheap.set(pInd, current);
 			}
@@ -88,7 +89,7 @@ public class BinaryHeap {
 			int min_ind;
 			if (r < binaryheap.size()) {
 				right = binaryheap.get(r);
-				min = (left.fValue < right.fValue) ? left : right;
+				min = (left.hValue < right.hValue) ? left : right;
 			} else {
 				min = left;
 			}
@@ -96,7 +97,7 @@ public class BinaryHeap {
 			min_ind = binaryheap.indexOf(min);
 
 			//swap parent and child if necessary
-			if (min.fValue < x.fValue) {
+			if (min.hValue < x.hValue) {
 				binaryheap.set(ind, min);
 				binaryheap.set(min_ind, x);
 			}
