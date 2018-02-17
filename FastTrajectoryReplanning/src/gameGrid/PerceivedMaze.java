@@ -27,8 +27,7 @@ public class PerceivedMaze extends Maze{
 	/**
 	 * update the maze with new information
 	 */
-	public void update() {
-		
+	public void update(int x, int y) {
+		this.board[x][y].state = true; //updates if Cell is blocked in actual maze
 	}
-
 }

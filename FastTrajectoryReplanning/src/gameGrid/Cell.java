@@ -21,7 +21,7 @@ public class Cell {
 		this.hValue = 1000000000; //initialized to infinity
 		this.visited = false; 
 		this.fValue = 0; 
-		this.gValue = 0; 
+		this.gValue = 1000000000; 
 		this.row = this.col = this.key = 0;
 		this.parent = null; 
 	}	

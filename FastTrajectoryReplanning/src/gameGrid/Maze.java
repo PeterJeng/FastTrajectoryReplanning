@@ -16,7 +16,7 @@ public class Maze {
 		int counter = 1; 
 		
 		for(int i = 0; i < board.length; i++) {
-			for(int j = 0; j < board[0].length; j++) {
+			for(int j = 0; j < board.length; j++) {
 				board[i][j] = new Cell();
 				board[i][j].key = counter;
 				counter++;

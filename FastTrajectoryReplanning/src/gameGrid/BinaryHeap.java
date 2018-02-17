@@ -30,13 +30,12 @@ public class BinaryHeap {
 	}
 
 	public boolean insertCell(Cell x) {
-		if (x.state == false) { //to prevent blocked cells from being added
+		if (x.state == false && x.visited == false) { // to prevent blocked & visited cells from being added
 			this.binaryheap.add(x); // Cell added to end of array
 			siftUp(x);
-			return true; //successful insert
-		}
-		else {
-			return false; //if cell is blocked then it is not added to open list
+			return true; // successful insert
+		} else {
+			return false; // if cell is blocked then it is not added to open list
 		}
 	}
 
@@ -45,15 +44,16 @@ public class BinaryHeap {
 		Cell last = binaryheap.get(binaryheap.size() - 1);
 		binaryheap.set(ind, last); // sets node to be deleted as last cell
 		this.binaryheap.remove(binaryheap.size() - 1); // deletes last cell
-		
-		//if we delete the last node in the array, do not shift
-		if(ind > binaryheap.size() - 1) {
+
+		// if we delete the last node in the array, do not shift
+		if (ind > binaryheap.size() - 1) {
 			return;
 		}
 
 		siftDown(binaryheap.get(ind));
-		
-		//special cases where a swapped node of last element after delete is smaller than parent. Resift
+
+		// special cases where a swapped node of last element after delete is smaller
+		// than parent. Resift
 		siftUp(binaryheap.get(ind));
 	}
 
@@ -63,7 +63,7 @@ public class BinaryHeap {
 		while (cInd > 0) {
 			Cell current = binaryheap.get(cInd);
 			Cell parent = binaryheap.get(pInd);
-			if (current.hValue < parent.hValue) {
+			if (current.fValue < parent.fValue) {
 				binaryheap.set(cInd, parent);
 				binaryheap.set(pInd, current);
 			}
@@ -76,12 +76,12 @@ public class BinaryHeap {
 		int ind = binaryheap.indexOf(x);
 		int l = 2 * ind + 1;
 		int r = 2 * ind + 2;
-		
-		//leaf nodes, do not shift
+
+		// leaf nodes, do not shift
 		if (l > binaryheap.size() - 1 && r > binaryheap.size() - 1) {
 			return;
 		}
-		
+
 		while (true) {
 			Cell left = binaryheap.get(l);
 			Cell right = new Cell();
@@ -89,52 +89,54 @@ public class BinaryHeap {
 			int min_ind;
 			if (r < binaryheap.size()) {
 				right = binaryheap.get(r);
-				min = (left.hValue < right.hValue) ? left : right;
+				min = (left.fValue < right.fValue) ? left : right;
 			} else {
 				min = left;
 			}
 
 			min_ind = binaryheap.indexOf(min);
 
-			//swap parent and child if necessary
-			if (min.hValue < x.hValue) {
+			// swap parent and child if necessary
+			if (min.fValue < x.fValue) {
 				binaryheap.set(ind, min);
 				binaryheap.set(min_ind, x);
 			}
 
-			//reset the indexes
+			// reset the indexes
 			ind = min_ind;
 			l = 2 * ind + 1;
 			r = 2 * ind + 2;
-			
-			//check to see if we are at leaf nodes
+
+			// check to see if we are at leaf nodes
 			if (l > binaryheap.size() - 1 && r > binaryheap.size() - 1) {
 				return;
 			}
 		}
 
 	}
-	
+
 	public void clearHeap() {
 		this.binaryheap.clear();
 	}
-	
+
 	public Cell getCell(int x) {
 		return this.binaryheap.get(x);
 	}
-	
+
 	public boolean isHeapEmpty() {
-		return this.binaryheap.isEmpty(); 
+		return this.binaryheap.isEmpty();
 	}
-	
+
 	public int heapSize() {
 		return this.binaryheap.size();
-	}	
-	
+	}
+
 	public void printHeap() {
 		for (int i = 0; i < binaryheap.size(); i++) {
-			System.out.println("Key: " + binaryheap.get(i).key);
-			// can expand to print out more properties later
+			System.out.print("Key: " + binaryheap.get(i).key);
+			System.out.print(" fValue: " + binaryheap.get(i).fValue);
+			System.out.print(" gValue: " + binaryheap.get(i).gValue);
+			System.out.println(" hValue: " + binaryheap.get(i).hValue);
 		}
 		System.out.print("\n");
 	}
