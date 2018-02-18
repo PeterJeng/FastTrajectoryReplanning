@@ -29,13 +29,13 @@ public class BinaryHeap {
 		binaryheap = new ArrayList<Cell>(5); // initial size of 5
 	}
 
-	public boolean insertCell(Cell x) {
-		if (x.state == false && x.visited == false) { // to prevent blocked & visited cells from being added
+	public boolean insertCell(Cell x, boolean checkOpen) {
+		if (x.state == false && x.visited == false && checkOpen == false) { 
 			this.binaryheap.add(x); // Cell added to end of array
 			siftUp(x);
 			return true; // successful insert
 		} else {
-			return false; // if cell is blocked then it is not added to open list
+			return false; // cell not added to openList
 		}
 	}
 

@@ -12,7 +12,7 @@ public class Maze {
 	public Cell[][] board;
 	
 	public Maze() {
-		this.board = new Cell[5][5];
+		this.board = new Cell[10][10];
 		int counter = 1; 
 		
 		for(int i = 0; i < board.length; i++) {
@@ -31,7 +31,7 @@ public class Maze {
 	 */
 	public void generateMaze() {
 		for(int i = 0; i < board.length; i++) {
-			for(int j = 0; j < board[0].length; j++) {
+			for(int j = 0; j < board.length; j++) {
 				if(Math.random() < 0.3) {
 					board[i][j].state = true;
 				}

@@ -32,18 +32,20 @@ public class TestClass {
 		Maze maze1 = new Maze();
 		//calculates heuristic for each cell
 		maze1.calculateHeuristic(4, 4);
-		//manually coding the state of the maze
+		maze1.generateMaze();
+		/*manually coding the state of the maze
 		maze1.board[0][2].state = true;
 		maze1.board[1][2].state = true;
 		maze1.board[2][2].state = true;
 		maze1.board[3][2].state = true;
 		maze1.board[4][2].state = true;
+		*/
 		//prints out maze
 		maze1.printMaze();
 		System.out.print("\n");
 		//testing out simpler aStar, does one iteration only
 		adaptiveastar test = new adaptiveastar();
-		test.aStar(maze1, 0, 0, 4, 4); //runs one A* search (no restarts)
+		test.aStar(maze1, 0, 0, 9, 9); //runs one A* search (no restarts)
 		
 	}	
 }
