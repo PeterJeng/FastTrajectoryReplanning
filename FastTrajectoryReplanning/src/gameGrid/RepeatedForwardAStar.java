@@ -34,6 +34,9 @@ public class RepeatedForwardAStar {
 		// local variable for easier access
 		int currentRow = robotMaze.current.row;
 		int currentCol = robotMaze.current.col;
+		
+		int startRow = currentRow;
+		int startCol = currentCol;
 
 		robotMaze.current.gValue = 0;
 		robotMaze.current.fValue = robotMaze.current.gValue + robotMaze.current.hValue;
@@ -52,25 +55,25 @@ public class RepeatedForwardAStar {
 			//update cell gValue, fValue, and parent pointer
 			//only update and insert if cell is an unblocked cell
 			if (top != null && top.state == false) {
-				top.gValue = robotMaze.current.gValue + 1;
+				top.gValue = Math.abs(top.row - startRow) + Math.abs(top.col - startCol);
 				top.fValue = top.gValue + top.hValue;
 				top.parent = robotMaze.current;
 				openList.insertCell(top, this.alreadyInOpenList(top));
 			}
 			if (bottom != null && bottom.state == false) {
-				bottom.gValue = robotMaze.current.gValue + 1;
+				bottom.gValue = Math.abs(bottom.row - startRow) + Math.abs(bottom.col - startCol);
 				bottom.fValue = bottom.gValue + bottom.hValue;
 				bottom.parent = robotMaze.current;
 				openList.insertCell(bottom, this.alreadyInOpenList(bottom));
 			}
 			if (left != null && left.state == false) {
-				left.gValue = robotMaze.current.gValue + 1;
+				left.gValue = Math.abs(left.row - startRow) + Math.abs(left.col - startCol);
 				left.fValue = left.gValue + left.hValue;
 				left.parent = robotMaze.current;
 				openList.insertCell(left, this.alreadyInOpenList(left));
 			}
 			if (right != null && right.state == false) {
-				right.gValue = robotMaze.current.gValue + 1;
+				right.gValue = Math.abs(right.row - startRow) + Math.abs(right.col - startCol);
 				right.fValue = right.gValue + right.hValue;
 				right.parent = robotMaze.current;
 				openList.insertCell(right, this.alreadyInOpenList(right));
@@ -80,6 +83,7 @@ public class RepeatedForwardAStar {
 			openList.deleteCell(robotMaze.current);
 			robotMaze.current = nextNodeInList();
 			//quick check to see if current node exist in closed list
+			//sometimes the planned path will go 4 -> 3 -> 4 due to the nature of the heap removal
 			if(closedList.contains(robotMaze.current)) {
 				openList.deleteCell(robotMaze.current);
 				robotMaze.current = nextNodeInList();
@@ -89,6 +93,9 @@ public class RepeatedForwardAStar {
 			currentRow = robotMaze.current.row;
 			currentCol = robotMaze.current.col;
 		}
+		
+		//quick add of the last node
+		closedList.add(robotMaze.current);
 	}
 
 	/**
