@@ -12,7 +12,7 @@ public class Maze {
 	public Cell[][] board;
 	
 	public Maze() {
-		this.board = new Cell[10][10];
+		this.board = new Cell[4][4];		
 		int counter = 1; 
 		
 		for(int i = 0; i < board.length; i++) {
