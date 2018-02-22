@@ -9,16 +9,12 @@ public class RepeatedForwardAStar {
 	public LinkedList<Cell> traversalPath;
 	public Maze realMaze;
 	int counter = 0;
-
-	public RepeatedForwardAStar() {
-		this.openList = new BinaryHeap();
-		this.closedList = new LinkedList<Cell>();
-		this.robotMaze = new PerceivedMaze();
-		this.traversalPath = new LinkedList<Cell>();
-	}
-
-	/*
-	 * Initialize all the values of the board
+	
+	
+	/**
+	 * Constructor for algorithm. Field instantiation 
+	 * @param realMaze actual maze with blocked and unblocked cells
+	 * @param perceivedMaze maze robot sees
 	 */
 	public RepeatedForwardAStar(Maze realMaze, PerceivedMaze perceivedMaze) {
 		this.openList = new BinaryHeap();
@@ -29,48 +25,50 @@ public class RepeatedForwardAStar {
 
 	}
 
+	/**
+	 * Traverses the perceivedMazes from current Start to End.
+	 * 
+	 * @return boolean True if there is a path from Start to End. False if there is no possible path.
+	 */
 	public boolean computePath() {
 		Cell left = new Cell();
 		Cell right = new Cell();
 		Cell bottom = new Cell();
 		Cell top = new Cell();
 		
-		robotMaze.start.parent = null;
-
-		// local variable for easier access
-		int currentRow = robotMaze.current.row;
-		int currentCol = robotMaze.current.col;
 		
+		robotMaze.start.parent = null;
+		
+		//calculate the gValues and fValues of the current cell.
+		//robotMaze.current should be equivalent to robotMaze.start at this point
 		robotMaze.current.gValue = 0;
 		robotMaze.current.fValue = robotMaze.current.gValue + robotMaze.current.hValue;
 		
+		//insert the starting cell to the Binary Heap
 		openList.insertCell(robotMaze.current, this.alreadyInOpenList(robotMaze.current));
 
 		while (robotMaze.current.key != robotMaze.end.key) {
 			// implement the cell locations
 			// if there is no cells to the direction of the current cell, then we set the X
 			// cell to null
-			top = (robotMaze.current.row - 1 < 0) ? null : robotMaze.board[currentRow - 1][currentCol];
-			bottom = (robotMaze.current.row + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[currentRow + 1][currentCol];
-			left = (robotMaze.current.col - 1 < 0) ? null : robotMaze.board[currentRow][currentCol - 1];
-			right = (robotMaze.current.col + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[currentRow][currentCol + 1];
+			top = (robotMaze.current.row - 1 < 0) ? null : robotMaze.board[robotMaze.current.row - 1][robotMaze.current.col];
+			bottom = (robotMaze.current.row + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[robotMaze.current.row + 1][robotMaze.current.col];
+			left = (robotMaze.current.col - 1 < 0) ? null : robotMaze.board[robotMaze.current.row][robotMaze.current.col - 1];
+			right = (robotMaze.current.col + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[robotMaze.current.row][robotMaze.current.col + 1];
 
 			//update cell gValue, fValue, and parent pointer
-			//only update and insert if cell is an unblocked cell
+			//only update and insert if cell is an unblocked cell and not already visited(represented by closedList)
 			if (top != null && top.state == false && !closedList.contains(top)) {
 				top.gValue = robotMaze.current.gValue + 1;
 				top.fValue = top.gValue + top.hValue;
 				openList.insertCell(top, this.alreadyInOpenList(top));
 				top.parent = robotMaze.current;
-
 			}
 			if (bottom != null && bottom.state == false && !closedList.contains(bottom)) {
 				bottom.gValue = robotMaze.current.gValue + 1;
 				bottom.fValue = bottom.gValue + bottom.hValue;
 				openList.insertCell(bottom, this.alreadyInOpenList(bottom));
-
 				bottom.parent = robotMaze.current;
-
 			}
 			if (left != null && left.state == false && !closedList.contains(left)) {
 				left.gValue = robotMaze.current.gValue + 1;
@@ -88,11 +86,13 @@ public class RepeatedForwardAStar {
 			closedList.add(robotMaze.current);
 			openList.deleteCell(robotMaze.current);
 			
+			//if heap is empty, then that means there are no possible expansions left
+			//Have not reached the target node so we return false
 			if(openList.isHeapEmpty()) {
-				System.out.println("NO SOLUTION");
 				return false;
 			}
 			
+			//update robotMaze.current to next one in Heap
 			robotMaze.current = nextNodeInList( );
 			//quick check to see if current node exist in closed list
 			//sometimes the planned path will go 4 -> 3 -> 4 due to the nature of the heap removal
@@ -100,16 +100,7 @@ public class RepeatedForwardAStar {
 				openList.deleteCell(robotMaze.current);
 				robotMaze.current = nextNodeInList();
 			}
-			
-
-			currentRow = robotMaze.current.row;
-			currentCol = robotMaze.current.col;
-			
-			
 		}
-
-		//quick add of the last node
-		closedList.add(robotMaze.current);
 		
 		//Provide a path from start cell to end cell
 		traversalPath();
@@ -130,10 +121,10 @@ public class RepeatedForwardAStar {
 	
 			// cell is blocked
 			if (realMaze.board[cellPtr.row][cellPtr.col].state == true) {
-				//this is to keep track of where the robot is now in the maze
+				//keep track of where the robot is now in the maze, backtrack one step
 				robotMaze.current = traversalPath.get(i - 1);
 				
-				// update the perceived Maze
+				// update the perceived Maze to a blocked state
 				robotMaze.board[cellPtr.row][cellPtr.col].state = true;
 				System.out.println();
 				System.out.println("HIT A BLOCK AT: " + cellPtr.key);
@@ -142,19 +133,23 @@ public class RepeatedForwardAStar {
 				openList.clearHeap();
 				closedList.clear();
 				
-				
 				//update the start location to new location
 				robotMaze.start = robotMaze.current;
 				
 				return;
 			}
 			
+			//look at the surroundings of the current cell and update if there is anything blocked
 			updateSurrounding(cellPtr);
 			
 			System.out.print(cellPtr.key + " ");
 		}
 	}
 
+	/**
+	 * Start method to begin the algorithm
+	 * Will call computePath() and traverseMaze() respectively.
+	 */
 	public void start() {
 		//takes a look around its surrounding for the first iteration of A*
 		updateSurrounding(robotMaze.current);
@@ -170,18 +165,22 @@ public class RepeatedForwardAStar {
 				}
 				
 				System.out.println();
+				
 				traverseMaze();
 				traversalPath.clear();
+				
 				System.out.println();
-			}
+			} 
 			else {
+				System.out.println("NO SOLUTION");
 				break;
-			}
-			
-		}
-		
+			}		
+		}	
 	}
 	
+	/**
+	 * Plan the traversal path by using parent pointers starting from the end
+	 */
 	public void traversalPath() {
 		//update the traversalPath
 		//start from the target and work backward until you reach start node
@@ -195,13 +194,11 @@ public class RepeatedForwardAStar {
 		
 	}
 	
-	
+	/**
+	 * Look at the surrounding cells of a given cell and update perceivedMaze if any cells are blocked
+	 * @param cell location to observe surrounding cells
+	 */
 	public void updateSurrounding(Cell cell) {
-//		Cell top = new Cell();
-//		Cell bottom = new Cell();
-//		Cell left = new Cell();
-//		Cell right = new Cell();
-		
 		Cell top = (cell.row - 1 < 0) ? null : robotMaze.board[cell.row - 1][cell.col];
 		Cell bottom = (cell.row + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[cell.row + 1][cell.col];
 		Cell left = (cell.col - 1 < 0) ? null : robotMaze.board[cell.row][cell.col - 1];
@@ -226,7 +223,6 @@ public class RepeatedForwardAStar {
 
 	/**
 	 * Implements a tie breaker using largest g-Value
-	 * 
 	 */
 	private Cell nextNodeInList() {
 		Cell result = this.openList.getCell(0);
@@ -243,7 +239,7 @@ public class RepeatedForwardAStar {
 		}
 		return result; 
 	}
-	
+
 	private boolean alreadyInOpenList(Cell x) {
 		int heapSize = this.openList.heapSize();
 		int cellKey = x.key;
