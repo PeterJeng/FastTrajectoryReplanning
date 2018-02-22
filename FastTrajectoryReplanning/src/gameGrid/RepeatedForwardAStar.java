@@ -149,11 +149,15 @@ public class RepeatedForwardAStar {
 				return;
 			}
 			
+			updateSurrounding(cellPtr);
+			
 			System.out.print(cellPtr.key + " ");
 		}
 	}
 
 	public void start() {
+		//takes a look around its surrounding for the first iteration of A*
+		updateSurrounding(robotMaze.current);
 		while(robotMaze.current.key != robotMaze.end.key) {
 			counter++;
 			if(computePath()) {
@@ -192,19 +196,33 @@ public class RepeatedForwardAStar {
 	}
 	
 	
-//	public boolean adjacentCell(Cell current, Cell adj) {
-//		//cell is to the left or right of current cell
-//		if(Math.abs(current.key - adj.key) == 1) {
-//			return true;
-//		}
-//		
-//		//cell is to the top or bottom of current cell
-//		if(Math.abs(current.key - adj.key) == robotMaze.board.length) {
-//			return true;
-//		}
-//		
-//		return false;
-//	}
+	public void updateSurrounding(Cell cell) {
+//		Cell top = new Cell();
+//		Cell bottom = new Cell();
+//		Cell left = new Cell();
+//		Cell right = new Cell();
+		
+		Cell top = (cell.row - 1 < 0) ? null : robotMaze.board[cell.row - 1][cell.col];
+		Cell bottom = (cell.row + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[cell.row + 1][cell.col];
+		Cell left = (cell.col - 1 < 0) ? null : robotMaze.board[cell.row][cell.col - 1];
+		Cell right = (cell.col + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[cell.row][cell.col + 1];
+		
+		if(top != null) {
+			robotMaze.board[top.row][top.col].state = realMaze.board[top.row][top.col].state;
+		}
+		
+		if(bottom != null) {
+			robotMaze.board[bottom.row][bottom.col].state = realMaze.board[bottom.row][bottom.col].state;
+		}
+		
+		if(left != null) {
+			robotMaze.board[left.row][left.col].state = realMaze.board[left.row][left.col].state;
+		}
+		
+		if(right != null) {
+			robotMaze.board[right.row][right.col].state = realMaze.board[right.row][right.col].state;
+		}
+	}
 
 	/**
 	 * Implements a tie breaker using largest g-Value
