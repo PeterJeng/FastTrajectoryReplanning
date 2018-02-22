@@ -230,12 +230,8 @@ public class RepeatedForwardAStar {
 		Cell temp = new Cell();
 		for (int i = 1; i < this.openList.heapSize(); i++) {
 			temp = this.openList.getCell(i);
-			if (temp.fValue == min && temp.gValue > result.gValue)
-				if(temp.visited == true && result.visited == false)
-					continue;
-				else {
-					result = temp;
-				}
+			if (temp.fValue == min && temp.gValue >= result.gValue)
+				result = temp;
 		}
 		return result; 
 	}

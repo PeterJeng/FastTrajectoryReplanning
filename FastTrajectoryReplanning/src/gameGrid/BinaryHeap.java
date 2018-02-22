@@ -111,6 +111,9 @@ public class BinaryHeap {
 			if (l > binaryheap.size() - 1 && r > binaryheap.size() - 1) {
 				return;
 			}
+//			
+//			System.out.println("binanry heap size: " + binaryheap.size() + " l:  " + l + " r: " + r);
+//			printHeap();
 		}
 
 	}
