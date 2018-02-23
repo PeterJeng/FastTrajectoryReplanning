@@ -35,4 +35,14 @@ public class Cell {
 		//ternary operator, basically if(state == true) return X else return _
 		return this.state ? "X " : "_ ";
 	}
+
+	public int compareTo(Cell cell) {
+		// TODO Auto-generated method stub
+		if(this.fValue < cell.fValue)
+			return -1;
+		else if(this.fValue == cell.fValue)
+			return 0;
+		else
+			return 1;
+	}
 }

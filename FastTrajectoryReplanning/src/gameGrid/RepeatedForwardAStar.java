@@ -88,18 +88,23 @@ public class RepeatedForwardAStar {
 			
 			//if heap is empty, then that means there are no possible expansions left
 			//Have not reached the target node so we return false
+
 			if(openList.isHeapEmpty()) {
 				return false;
 			}
-			
 			//update robotMaze.current to next one in Heap
 			robotMaze.current = nextNodeInList( );
 			//quick check to see if current node exist in closed list
 			//sometimes the planned path will go 4 -> 3 -> 4 due to the nature of the heap removal
-			if(closedList.contains(robotMaze.current)) {
-				openList.deleteCell(robotMaze.current);
-				robotMaze.current = nextNodeInList();
-			}
+//			if(closedList.contains(robotMaze.current)) {
+//				openList.deleteCell(robotMaze.current);
+//				
+//				if(openList.isHeapEmpty()) {
+//					return false;
+//				}
+//				
+//				robotMaze.current = nextNodeInList();
+//			}
 		}
 		
 		//Provide a path from start cell to end cell
@@ -230,7 +235,7 @@ public class RepeatedForwardAStar {
 		Cell temp = new Cell();
 		for (int i = 1; i < this.openList.heapSize(); i++) {
 			temp = this.openList.getCell(i);
-			if (temp.fValue == min && temp.gValue >= result.gValue)
+			if (temp.fValue == min && temp.gValue > result.gValue)
 				result = temp;
 		}
 		return result; 
