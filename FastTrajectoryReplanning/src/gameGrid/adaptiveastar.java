@@ -1,287 +1,292 @@
 package gameGrid;
 
 /**
- * Implementation of Adaptive A* 
+ * Class for Adaptive Repeated Forward A*
  * 
- * Authors: Peter Jeng and Seerat Aziz
- * Homework Assignment 1
- * Introduction to Artificial Intelligence
+ * Authors: Peter Jeng and Seerat Aziz 
+ * Homework Assignment 1 
+ * Introduction to Artificial Intelligence 
  * Spring 2018
  */
 
-import java.util.LinkedList; 
+import java.util.LinkedList;
 
-//all properties are public for testing purposes
 public class adaptiveastar {
-	private PerceivedMaze robotMaze;	//what robot sees
-	private BinaryHeap openList; 		//A*'s open list of cells to be expanded
-	private LinkedList<Cell> closedList; 	//A*'s list of explored cells 
-	private LinkedList<Cell> traversedPath; //overall traversed path
+	public PerceivedMaze robotMaze;
+	public BinaryHeap openList;
+	public LinkedList<Cell> closedList;
+	public LinkedList<Cell> traversalPath;
+	public Maze realMaze;
+	int counter = 0;
 	
-	public adaptiveastar () {
-		robotMaze = new PerceivedMaze();
-		openList = new BinaryHeap();
-		closedList = new LinkedList<Cell>(); 
-		traversedPath = new LinkedList<Cell>();
+	
+	/**
+	 * Constructor for algorithm. Field instantiation 
+	 * @param realMaze actual maze with blocked and unblocked cells
+	 * @param perceivedMaze maze robot sees
+	 */
+	public adaptiveastar(Maze realMaze, PerceivedMaze perceivedMaze) {
+		this.openList = new BinaryHeap();
+		this.closedList = new LinkedList<Cell>();
+		this.robotMaze = perceivedMaze;
+		this.realMaze = realMaze;
+		this.traversalPath = new LinkedList<Cell>();
+
+	}
+
+	/**
+	 * Traverses the perceivedMazes from current Start to End.
+	 * 
+	 * @return boolean True if there is a path from Start to End. False if there is no possible path.
+	 */
+	public boolean computePath() {
+		Cell left = new Cell();
+		Cell right = new Cell();
+		Cell bottom = new Cell();
+		Cell top = new Cell();
+		
+		
+		robotMaze.start.parent = null;
+		
+		//calculate the gValues and fValues of the current cell.
+		//robotMaze.current should be equivalent to robotMaze.start at this point
+		int g_sGoal = robotMaze.current.hValue; //in order to update heuristic for adaptive a* [ g(s_goal) ]
+		robotMaze.current.gValue = 0;
+		robotMaze.current.fValue = robotMaze.current.gValue + robotMaze.current.hValue;
+		
+		//insert the starting cell to the Binary Heap
+		openList.insertCell(robotMaze.current, this.alreadyInOpenList(robotMaze.current));
+
+		while (robotMaze.current.key != robotMaze.end.key) {
+			// implement the cell locations
+			// if there is no cells to the direction of the current cell, then we set the X
+			// cell to null
+			top = (robotMaze.current.row - 1 < 0) ? null : robotMaze.board[robotMaze.current.row - 1][robotMaze.current.col];
+			bottom = (robotMaze.current.row + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[robotMaze.current.row + 1][robotMaze.current.col];
+			left = (robotMaze.current.col - 1 < 0) ? null : robotMaze.board[robotMaze.current.row][robotMaze.current.col - 1];
+			right = (robotMaze.current.col + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[robotMaze.current.row][robotMaze.current.col + 1];
+
+			//update cell gValue, fValue, and parent pointer
+			//only update and insert if cell is an unblocked cell and not already visited(represented by closedList)
+			if (top != null && top.state == false && !closedList.contains(top)) {
+				top.gValue = robotMaze.current.gValue + 1;
+				top.fValue = top.gValue + top.hValue;
+				openList.insertCell(top, this.alreadyInOpenList(top));
+				top.parent = robotMaze.current;
+			}
+			if (bottom != null && bottom.state == false && !closedList.contains(bottom)) {
+				bottom.gValue = robotMaze.current.gValue + 1;
+				bottom.fValue = bottom.gValue + bottom.hValue;
+				openList.insertCell(bottom, this.alreadyInOpenList(bottom));
+				bottom.parent = robotMaze.current;
+			}
+			if (left != null && left.state == false && !closedList.contains(left)) {
+				left.gValue = robotMaze.current.gValue + 1;
+				left.fValue = left.gValue + left.hValue;
+				openList.insertCell(left, this.alreadyInOpenList(left));
+				left.parent = robotMaze.current;
+			}
+			if (right != null && right.state == false && !closedList.contains(right)) {
+				right.gValue = robotMaze.current.gValue + 1;
+				right.fValue = right.gValue + right.hValue;
+				openList.insertCell(right, this.alreadyInOpenList(right));
+				right.parent = robotMaze.current;
+			}
+
+			closedList.add(robotMaze.current);
+			//heuristic of cell added to closed list is updated
+			int oldHVal = robotMaze.current.hValue; 
+			robotMaze.board[robotMaze.current.row][robotMaze.current.col].hValue = g_sGoal - oldHVal; //g(s_goal) - g(s)
+			openList.deleteCell(robotMaze.current);
+			
+			//if heap is empty, then that means there are no possible expansions left
+			//Have not reached the target node so we return false
+
+			if(openList.isHeapEmpty()) {
+				return false;
+			}
+			//update robotMaze.current to next one in Heap
+			robotMaze.current = nextNodeInList( );
+			//quick check to see if current node exist in closed list
+			//sometimes the planned path will go 4 -> 3 -> 4 due to the nature of the heap removal
+//			if(closedList.contains(robotMaze.current)) {
+//				openList.deleteCell(robotMaze.current);
+//				
+//				if(openList.isHeapEmpty()) {
+//					return false;
+//				}
+//				
+//				robotMaze.current = nextNodeInList();
+//			}
+		}
+		
+		//Provide a path from start cell to end cell
+		traversalPath();
+		
+		return true;
+		
+	}
+
+	/**
+	 * Movement of the robot in the actual maze
+	 */
+	public void traverseMaze() {
+		System.out.println("Starting travesal...");
+		System.out.println("Reached: ");
+		Cell cellPtr = new Cell();
+		for (int i = 0; i < traversalPath.size(); i++) {
+			cellPtr = traversalPath.get(i);
+	
+			// cell is blocked
+			if (realMaze.board[cellPtr.row][cellPtr.col].state == true) {
+				//keep track of where the robot is now in the maze, backtrack one step
+				robotMaze.current = traversalPath.get(i - 1);
+				
+				// update the perceived Maze to a blocked state
+				robotMaze.board[cellPtr.row][cellPtr.col].state = true;
+				System.out.println();
+				System.out.println("HIT A BLOCK AT: " + cellPtr.key);
+				
+				/*update heuristic here (for adaptive A*)
+				int g_sGoal = traversalPath.get(0).hValue; //distance from start state to goal
+				int stop_ind = i-1; //so that it only updates hValues for visited states
+				updateHeuristic(g_sGoal, stop_ind);
+				*/
+				
+				//clear the open and closed list
+				openList.clearHeap();
+				closedList.clear(); //is this even being used??? extraneous
+				
+				//update the start location to new location
+				robotMaze.start = robotMaze.current;
+				
+				return;
+			}
+			
+			//look at the surroundings of the current cell and update if there is anything blocked
+			updateSurrounding(cellPtr);
+			
+			System.out.print(cellPtr.key + " ");
+		}
+	}
+
+	/**
+	 * Start method to begin the algorithm
+	 * Will call computePath() and traverseMaze() respectively.
+	 */
+	public void start() {
+		//takes a look around its surrounding for the first iteration of A*
+		updateSurrounding(robotMaze.current);
+		while(robotMaze.current.key != robotMaze.end.key) {
+			counter++;
+			if(computePath()) {
+				System.out.println("Planned path: ");
+
+				Cell cellPtr = new Cell();
+				for (int i = 0; i < traversalPath.size(); i++) {
+					cellPtr = traversalPath.get(i);
+					System.out.print(cellPtr.key + " ");
+				}
+				
+				System.out.println();
+				
+				traverseMaze();
+				traversalPath.clear();
+				
+				System.out.println();
+			} 
+			else {
+				System.out.println("NO SOLUTION");
+				break;
+			}		
+		}	
 	}
 	
-	//helper function that finds the neighboring nodes of the current cell
-		//updates the openlist appropriately
-		private void cellNeighbors(Maze x, int sRow, int sCol) {
-			Cell start = x.board[sRow][sCol];
-			Cell right = new Cell(); Cell left = new Cell(); 
-			Cell bottom = new Cell(); Cell top = new Cell();
-			
-			//calculates g and f values of start state's children
-			//then adds them to the open list 
-			
-			if (sRow == 0 && sCol == 0) //top left corner
-			{ 
-				right = x.board[sRow][sCol+1];
-				bottom = x.board[sRow+1][sCol];
-				right.gValue = robotMaze.traveledPathCost+1; 
-				bottom.gValue = robotMaze.traveledPathCost+1; 
-				right.parent = start;
-				bottom.parent = start; 
-				
-				right.fValue = right.gValue + right.hValue;
-				bottom.fValue = bottom.gValue + bottom.hValue; 
-				
-				openList.insertCell(right, this.alreadyInOpenList(right));
-				openList.insertCell(bottom, this.alreadyInOpenList(bottom));
-			}
-			else if (sRow == 0 && sCol == (x.board.length-1)) //top right corner
-			{
-				left = x.board[sRow][sCol-1];
-				bottom = x.board[sRow+1][sCol];
-				left.gValue = robotMaze.traveledPathCost+1;
-				bottom.gValue = robotMaze.traveledPathCost+1;
-				left.parent = start;
-				bottom.parent = start; 
-				
-				bottom.fValue = bottom.gValue + bottom.hValue;
-				left.fValue = left.gValue + left.hValue; 
-				
-				openList.insertCell(left, this.alreadyInOpenList(left));
-				openList.insertCell(bottom, this.alreadyInOpenList(bottom));
-			}
-			else if (sRow == (x.board.length-1) && sCol == 0)  //bottom left corner
-			{
-				right = x.board[sRow][sCol+1];
-				top = x.board[sRow-1][sCol];
-				right.gValue = robotMaze.traveledPathCost+1; 
-				top.gValue = robotMaze.traveledPathCost+1; 
-				right.parent = start;
-				top.parent = start; 
-				
-				right.fValue = right.gValue + right.hValue;
-				top.fValue = top.gValue + top.hValue; 
-				
-				openList.insertCell(right, this.alreadyInOpenList(right));
-				openList.insertCell(top, this.alreadyInOpenList(top));
-			}
-			else if  (sRow == (x.board.length-1) && sCol == (x.board.length-1)) //bottom right corner
-			{
-				left = x.board[sRow][sCol-1];
-				top = x.board[sRow-1][sCol];
-				left.gValue = robotMaze.traveledPathCost+1; 
-				top.gValue = robotMaze.traveledPathCost+1;
-				left.parent = start;
-				top.parent = start; 
-				
-				left.fValue = left.gValue + left.hValue;
-				top.fValue = top.gValue + top.hValue;
-				
-				openList.insertCell(left, this.alreadyInOpenList(left));
-				openList.insertCell(top, this.alreadyInOpenList(top));
-			}
-			else if (sRow == 0) //top edge
-			{
-				right = x.board[sRow][sCol+1];
-				left = x.board[sRow][sCol-1];
-				bottom = x.board[sRow+1][sCol];
-				right.gValue = robotMaze.traveledPathCost+1; 
-				left.gValue = robotMaze.traveledPathCost+1;
-				bottom.gValue = robotMaze.traveledPathCost+1;
-				right.parent = start;
-				left.parent = start;
-				bottom.parent = start; 
-				
-				bottom.fValue = bottom.gValue + bottom.hValue; 
-				right.fValue = right.gValue + right.hValue;
-				left.fValue = left.gValue + left.hValue;
-				
-				openList.insertCell(right, this.alreadyInOpenList(right));
-				openList.insertCell(left, this.alreadyInOpenList(left));
-				openList.insertCell(bottom, this.alreadyInOpenList(bottom));
-			}
-			else if (sRow == (x.board.length-1)) //bottom edge
-			{
-				right = x.board[sRow][sCol+1];
-				left = x.board[sRow][sCol-1];
-				top = x.board[sRow-1][sCol];
-				right.gValue = robotMaze.traveledPathCost+1; 
-				left.gValue = robotMaze.traveledPathCost+1;
-				top.gValue = robotMaze.traveledPathCost+1;
-				right.parent = start;
-				left.parent = start;
-				top.parent = start; 
-				
-				right.fValue = right.gValue + right.hValue;
-				left.fValue = left.gValue + left.hValue;
-				top.fValue = top.gValue + top.hValue;
-				
-				openList.insertCell(right, this.alreadyInOpenList(right));
-				openList.insertCell(left, this.alreadyInOpenList(left));
-				openList.insertCell(top, this.alreadyInOpenList(top));
-			} 
-			else if (sCol == 0) //left edge
-			{
-				right = x.board[sRow][sCol+1];
-				top = x.board[sRow-1][sCol];
-				bottom = x.board[sRow+1][sCol];
-				right.gValue = robotMaze.traveledPathCost+1; 
-				top.gValue = robotMaze.traveledPathCost+1;
-				bottom.gValue = robotMaze.traveledPathCost+1;
-				right.parent = start;
-				top.parent = start;
-				bottom.parent = start; 
-				
-				bottom.fValue = bottom.gValue + bottom.hValue; 
-				right.fValue = right.gValue + right.hValue;
-				top.fValue = top.gValue + top.hValue;
-				
-				openList.insertCell(right, this.alreadyInOpenList(right));
-				openList.insertCell(top, this.alreadyInOpenList(top));
-				openList.insertCell(bottom, this.alreadyInOpenList(bottom));
-			}
-			else if (sCol == (x.board.length-1)) //right edge
-			{
-				left = x.board[sRow][sCol-1];
-				top = x.board[sRow-1][sCol];
-				bottom = x.board[sRow+1][sCol];
-				left.gValue = robotMaze.traveledPathCost+1; 
-				top.gValue = robotMaze.traveledPathCost+1;
-				bottom.gValue = robotMaze.traveledPathCost+1;
-				left.parent = start;
-				top.parent = start;
-				bottom.parent = start; 
-				
-				bottom.fValue = bottom.gValue + bottom.hValue; 
-				left.fValue = left.gValue + left.hValue;
-				top.fValue = top.gValue + top.hValue;
-				
-				openList.insertCell(left, this.alreadyInOpenList(left));
-				openList.insertCell(top, this.alreadyInOpenList(top));
-				openList.insertCell(bottom, this.alreadyInOpenList(bottom));
-			}
-			else { //in the middle of the grid world
-				right = x.board[sRow][sCol+1];
-				left = x.board[sRow][sCol-1];
-				top = x.board[sRow-1][sCol];
-				bottom = x.board[sRow+1][sCol];
-				right.gValue = robotMaze.traveledPathCost+1; 
-				left.gValue = robotMaze.traveledPathCost+1;
-				top.gValue = robotMaze.traveledPathCost+1; 
-				bottom.gValue = robotMaze.traveledPathCost+1; 
-				right.parent = start; left.parent = start;
-				top.parent = start; bottom.parent = start; 
-				
-				bottom.fValue = bottom.gValue + bottom.hValue; 
-				right.fValue = right.gValue + right.hValue;
-				left.fValue = left.gValue + left.hValue;
-				top.fValue = top.gValue + top.hValue;
-				
-				openList.insertCell(right, this.alreadyInOpenList(right));
-				openList.insertCell(left, this.alreadyInOpenList(left));
-				openList.insertCell(top, this.alreadyInOpenList(top));
-				openList.insertCell(bottom, this.alreadyInOpenList(bottom));
-			}
+	/**
+	 * Plan the traversal path by using parent pointers starting from the end
+	 */
+	public void traversalPath() {
+		//update the traversalPath
+		//start from the target and work backward until you reach start node
+		//add the final node first, and then work backwards until we reach the start node
+		Cell temp = robotMaze.end;
+		
+		while(temp != null) {
+			traversalPath.addFirst(temp);
+			temp = temp.parent;
 		}
 		
-		private boolean alreadyInOpenList(Cell x) {
-			int heapSize = this.openList.heapSize();
-			int cellKey = x.key;
-			Cell temp = new Cell();
-			for (int i = 0; i < heapSize; i++) {
-				temp = this.openList.getCell(i);
-				if (temp.key == cellKey) {
-					return true;
-				}
-			}
-			return false; 
+	}
+	
+	/**
+	 * Look at the surrounding cells of a given cell and update perceivedMaze if any cells are blocked
+	 * @param cell location to observe surrounding cells
+	 */
+	public void updateSurrounding(Cell cell) {
+		Cell top = (cell.row - 1 < 0) ? null : robotMaze.board[cell.row - 1][cell.col];
+		Cell bottom = (cell.row + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[cell.row + 1][cell.col];
+		Cell left = (cell.col - 1 < 0) ? null : robotMaze.board[cell.row][cell.col - 1];
+		Cell right = (cell.col + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[cell.row][cell.col + 1];
+		
+		if(top != null) {
+			robotMaze.board[top.row][top.col].state = realMaze.board[top.row][top.col].state;
 		}
 		
-		private Cell tieBreaker() {
-			Cell result = this.openList.getCell(0);
-			int min = result.fValue;
-			Cell temp = new Cell();
-			for (int i = 1; i < this.openList.heapSize(); i++) {
-				temp = this.openList.getCell(i);
-				if (temp.fValue == min && temp.gValue > result.gValue)
-					result = temp; 
-			}
-			return result; 
-		}
-		/*
-		 * runs one A* search
-		 * need to consider what to do at a dead end - DONE
-		 * need to update traversedPath list properly - kind of done
-		 * need to stop it from jumping around -- check it see if next cell is adjacent to last cell
-		 * 	-if it has to jump around, then it should restart the algorithm from new starting point
-		 * 	-it should break while loop and return false for the repeatedAdaptiveSearch() function
-		 */
-		public void aStar(Maze x, int sRow, int sCol, int gRow, int gCol) {
-			Cell start = x.board[sRow][sCol];
-			start.fValue = start.gValue + start.hValue;
-			this.openList.insertCell(start, this.alreadyInOpenList(start));
-			this.cellNeighbors(x, sRow, sCol);
-			//this.openList.printHeap();
-			Cell next = new Cell();
-			
-			while(!this.openList.isHeapEmpty()) {
-				this.openList.deleteCell(start);
-				this.traversedPath.add(start);
-				if (this.openList.isHeapEmpty())
-					break; 
-				next = this.tieBreaker();
-				//System.out.println("\nnextRow: " + next.row + " nextCol: " + next.col);
-				this.closedList.add(start);
-				this.robotMaze.move();
-				x.board[start.row][start.col].visited = true;
-				
-				if (next.row == gRow && next.col == gCol) {
-					this.openList.deleteCell(next);
-					this.closedList.add(next);
-					this.traversedPath.add(next);
-					System.out.println("Goal found!\nTraversed Path: ");
-					for (int i = 0; i < this.traversedPath.size()-1; i++) {
-						System.out.print(this.traversedPath.get(i).key + " -> ");
-					}
-					System.out.print(next.key + "\n");
-					return; 
-				}
-				this.cellNeighbors(x, next.row, next.col);
-				start = next;
-				//this.openList.printHeap();
-			}
-			
-			System.out.println("Solution could not be found for this maze.\nTraversed Path: ");
-			for (int i = 0; i < this.traversedPath.size()-1; i++) {
-				System.out.print(this.traversedPath.get(i).key + " -> ");
-			}
-			System.out.print(next.key + "\n");
-			return; 
+		if(bottom != null) {
+			robotMaze.board[bottom.row][bottom.col].state = realMaze.board[bottom.row][bottom.col].state;
 		}
 		
-		public void updateHeuristic() {
-			//for adaptive a* only
+		if(left != null) {
+			robotMaze.board[left.row][left.col].state = realMaze.board[left.row][left.col].state;
 		}
 		
-		public void adaptiveRepeatedForward(Maze x, int sRow, int sCol, int gRow, int gCol) {
-			//when to stop calling A*???
-			//after scanning the perceived maze after each search???
-			//update GUI from this function??? to show where the robot is traveling
-			//closed and open lists cleared after each search
+		if(right != null) {
+			robotMaze.board[right.row][right.col].state = realMaze.board[right.row][right.col].state;
 		}
+	}
+
+	/**
+	 * Implements a tie breaker using largest g-Value
+	 */
+	private Cell nextNodeInList() {
+		Cell result = this.openList.getCell(0);
+		int min = result.fValue;
+		Cell temp = new Cell();
+		for (int i = 1; i < this.openList.heapSize(); i++) {
+			temp = this.openList.getCell(i);
+			if (temp.fValue == min && temp.gValue > result.gValue)
+				result = temp;
+		}
+		return result; 
+	}
+	
+	/*
+	 * Updates the hValue of the all cells expanded by the A* search
+	 * g_SGoal = distance from start cell to goal cell
+	 * stop_ind = index in which the A* search hit a block and will be restarting from
+	 * h_new(s) = g_SGoal - g_S (g_S is distance from current state to start state -- traveled cost)
+	public void updateHeuristic(int g_sGoal, int stop_ind) {
+		//updates heuristics after each search
+		//only for Adaptive A*
+		Cell temp = null; 
+		int g_S = 0;
+		for (int i = 0; i == stop_ind; i++) {
+			temp = traversalPath.get(i);
+			g_S = temp.gValue; //distance from current state to start state
+			robotMaze.board[temp.row][temp.col].hValue = g_sGoal - g_S; //updates heuristic on perceivedMaze
+		}
+	}
+	*/
+	private boolean alreadyInOpenList(Cell x) {
+		int heapSize = this.openList.heapSize();
+		int cellKey = x.key;
+		Cell temp = new Cell();
+		for (int i = 0; i < heapSize; i++) {
+			temp = this.openList.getCell(i);
+			if (temp.key == cellKey) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
