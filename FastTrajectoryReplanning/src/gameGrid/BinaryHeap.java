@@ -30,7 +30,7 @@ public class BinaryHeap {
 	}
 
 	public boolean insertCell(Cell x, boolean checkOpen) {
-		if (x.state == false && x.visited == false && checkOpen == false) { 
+		if (x.state == false && checkOpen == false) { 
 			this.binaryheap.add(x); // Cell added to end of array
 			siftUp(x);
 			return true; // successful insert

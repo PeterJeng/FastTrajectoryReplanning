@@ -11,7 +11,7 @@ package gameGrid;
 public class Cell {
 	int key; 	//"name" of the node, this attribute can be removed later, just for testing??
 	boolean state; //blocked or unblocked
-	boolean visited; //visited or unvisited ON PAUSE 
+	boolean visited; //visited or unvisited
 	int hValue, gValue, fValue;
 	Cell parent; //to keep track of parent of the cell and make it easier to backtrack
 	int row, col; //to keep track of Cell's location within the grid world
@@ -34,6 +34,10 @@ public class Cell {
 		
 		//ternary operator, basically if(state == true) return X else return _
 		return this.state ? "X " : "_ ";
+	}
+	
+	public String isVisited() {
+		return this.visited ? "* " : "_ "; 
 	}
 
 	public int compareTo(Cell cell) {

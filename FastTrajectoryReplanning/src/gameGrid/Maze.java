@@ -12,7 +12,7 @@ public class Maze {
 	public Cell[][] board;
 	
 	public Maze() {
-		this.board = new Cell[25][25];		
+		this.board = new Cell[10][10];		
 		int counter = 1; 
 		
 		for(int i = 0; i < board.length; i++) {
@@ -52,7 +52,10 @@ public class Maze {
 	public void printMaze() {
 		for(int i = 0; i < board.length; i++) {
 			for(int j = 0; j < board[0].length; j++) {
-				System.out.print(board[i][j].toString());
+				if ((board[i][j].state == true || board[i][j].state == false) && board[i][j].visited == false)
+					System.out.print(board[i][j].toString());
+				else 
+					System.out.print(board[i][j].isVisited());
 			}
 			System.out.println();
 		}

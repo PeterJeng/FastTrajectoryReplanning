@@ -93,7 +93,8 @@ public class adaptiveastar {
 				right.parent = robotMaze.current;
 			}
 
-			closedList.add(robotMaze.current);
+			closedList.add(robotMaze.current); 
+			//robotMaze.board[robotMaze.current.row][robotMaze.current.col].visited = true; 
 			//heuristic of cell added to closed list is updated
 			int oldHVal = robotMaze.current.hValue; 
 			robotMaze.board[robotMaze.current.row][robotMaze.current.col].hValue = g_sGoal - oldHVal; //g(s_goal) - g(s)
@@ -144,6 +145,8 @@ public class adaptiveastar {
 				
 				// update the perceived Maze to a blocked state
 				robotMaze.board[cellPtr.row][cellPtr.col].state = true;
+				// ADDED - update surroundings of cellPtr
+				updateSurrounding(cellPtr);
 				System.out.println();
 				System.out.println("HIT A BLOCK AT: " + cellPtr.key);
 				
@@ -162,6 +165,8 @@ public class adaptiveastar {
 				
 				return;
 			}
+			//ADDED - marks traversed cell as visited 
+			robotMaze.board[cellPtr.row][cellPtr.col].visited = true; 
 			
 			//look at the surroundings of the current cell and update if there is anything blocked
 			updateSurrounding(cellPtr);
@@ -196,6 +201,7 @@ public class adaptiveastar {
 				System.out.println();
 			} 
 			else {
+				robotMaze.board[robotMaze.current.row][robotMaze.current.col].visited = true; //ADDED
 				System.out.println("NO SOLUTION");
 				break;
 			}		
