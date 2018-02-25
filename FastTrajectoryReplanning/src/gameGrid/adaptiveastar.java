@@ -56,7 +56,7 @@ public class adaptiveastar {
 		
 		//insert the starting cell to the Binary Heap
 		openList.insertCell(robotMaze.current, this.alreadyInOpenList(robotMaze.current));
-
+		
 		while (robotMaze.current.key != robotMaze.end.key) {
 			// implement the cell locations
 			// if there is no cells to the direction of the current cell, then we set the X
@@ -65,7 +65,7 @@ public class adaptiveastar {
 			bottom = (robotMaze.current.row + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[robotMaze.current.row + 1][robotMaze.current.col];
 			left = (robotMaze.current.col - 1 < 0) ? null : robotMaze.board[robotMaze.current.row][robotMaze.current.col - 1];
 			right = (robotMaze.current.col + 1 > robotMaze.board.length - 1) ? null : robotMaze.board[robotMaze.current.row][robotMaze.current.col + 1];
-
+			
 			//update cell gValue, fValue, and parent pointer
 			//only update and insert if cell is an unblocked cell and not already visited(represented by closedList)
 			if (top != null && top.state == false && !closedList.contains(top)) {
@@ -92,47 +92,29 @@ public class adaptiveastar {
 				openList.insertCell(right, this.alreadyInOpenList(right));
 				right.parent = robotMaze.current;
 			}
-
 			closedList.add(robotMaze.current); 
-			//robotMaze.board[robotMaze.current.row][robotMaze.current.col].visited = true; 
 			//heuristic of cell added to closed list is updated
 			int oldHVal = robotMaze.current.hValue; 
 			robotMaze.board[robotMaze.current.row][robotMaze.current.col].hValue = g_sGoal - oldHVal; //g(s_goal) - g(s)
 			openList.deleteCell(robotMaze.current);
-			
 			//if heap is empty, then that means there are no possible expansions left
 			//Have not reached the target node so we return false
-
 			if(openList.isHeapEmpty()) {
 				return false;
 			}
 			//update robotMaze.current to next one in Heap
 			robotMaze.current = nextNodeInList( );
-			//quick check to see if current node exist in closed list
-			//sometimes the planned path will go 4 -> 3 -> 4 due to the nature of the heap removal
-//			if(closedList.contains(robotMaze.current)) {
-//				openList.deleteCell(robotMaze.current);
-//				
-//				if(openList.isHeapEmpty()) {
-//					return false;
-//				}
-//				
-//				robotMaze.current = nextNodeInList();
-//			}
 		}
-		
 		//Provide a path from start cell to end cell
 		traversalPath();
-		
 		return true;
-		
 	}
 
 	/**
 	 * Movement of the robot in the actual maze
 	 */
 	public void traverseMaze() {
-		System.out.println("Starting travesal...");
+		System.out.println("Starting traversal...");
 		System.out.println("Reached: ");
 		Cell cellPtr = new Cell();
 		for (int i = 0; i < traversalPath.size(); i++) {
@@ -196,12 +178,16 @@ public class adaptiveastar {
 				System.out.println();
 				
 				traverseMaze();
+				System.out.println(); //ADDED
+				robotMaze.printMaze(); //ADDED
 				traversalPath.clear();
 				
 				System.out.println();
 			} 
 			else {
-				robotMaze.board[robotMaze.current.row][robotMaze.current.col].visited = true; //ADDED
+				//robotMaze.board[robotMaze.current.row][robotMaze.current.col].visited = true; //ADDED
+				System.out.println(); //ADDED
+				robotMaze.printMaze(); //ADDED
 				System.out.println("NO SOLUTION");
 				break;
 			}		
