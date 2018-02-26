@@ -50,9 +50,10 @@ public class adaptiveastar {
 		
 		//calculate the gValues and fValues of the current cell.
 		//robotMaze.current should be equivalent to robotMaze.start at this point
-		int g_sGoal = robotMaze.current.hValue; //in order to update heuristic for adaptive a* [ g(s_goal) ]
 		robotMaze.current.gValue = 0;
 		robotMaze.current.fValue = robotMaze.current.gValue + robotMaze.current.hValue;
+		
+		//int g_sGoal = robotMaze.current.hValue; //in order to update heuristic for adaptive a* [ g(s_goal) ]
 		
 		//insert the starting cell to the Binary Heap
 		openList.insertCell(robotMaze.current, this.alreadyInOpenList(robotMaze.current));
@@ -93,15 +94,19 @@ public class adaptiveastar {
 				right.parent = robotMaze.current;
 			}
 			closedList.add(robotMaze.current); 
+			
 			//heuristic of cell added to closed list is updated
-			int oldHVal = robotMaze.current.hValue; 
-			robotMaze.board[robotMaze.current.row][robotMaze.current.col].hValue = g_sGoal - oldHVal; //g(s_goal) - g(s)
+			//int oldHVal = robotMaze.current.hValue; 
+			//robotMaze.board[robotMaze.current.row][robotMaze.current.col].hValue = g_sGoal - oldHVal; //g(s_goal) - g(s)
+			
 			openList.deleteCell(robotMaze.current);
+			
 			//if heap is empty, then that means there are no possible expansions left
 			//Have not reached the target node so we return false
 			if(openList.isHeapEmpty()) {
 				return false;
 			}
+			
 			//update robotMaze.current to next one in Heap
 			robotMaze.current = nextNodeInList( );
 		}
@@ -127,20 +132,18 @@ public class adaptiveastar {
 				
 				// update the perceived Maze to a blocked state
 				robotMaze.board[cellPtr.row][cellPtr.col].state = true;
-				// ADDED - update surroundings of cellPtr
-				updateSurrounding(cellPtr);
+				
 				System.out.println();
 				System.out.println("HIT A BLOCK AT: " + cellPtr.key);
 				
-				/*update heuristic here (for adaptive A*)
+				//update heuristic here (for adaptive A*)
 				int g_sGoal = traversalPath.get(0).hValue; //distance from start state to goal
 				int stop_ind = i-1; //so that it only updates hValues for visited states
 				updateHeuristic(g_sGoal, stop_ind);
-				*/
 				
 				//clear the open and closed list
 				openList.clearHeap();
-				closedList.clear(); //is this even being used??? extraneous
+				closedList.clear();
 				
 				//update the start location to new location
 				robotMaze.start = robotMaze.current;
@@ -181,7 +184,6 @@ public class adaptiveastar {
 				System.out.println(); //ADDED
 				robotMaze.printMaze(); //ADDED
 				traversalPath.clear();
-				
 				System.out.println();
 			} 
 			else {
@@ -257,6 +259,7 @@ public class adaptiveastar {
 	 * g_SGoal = distance from start cell to goal cell
 	 * stop_ind = index in which the A* search hit a block and will be restarting from
 	 * h_new(s) = g_SGoal - g_S (g_S is distance from current state to start state -- traveled cost)
+	 */
 	public void updateHeuristic(int g_sGoal, int stop_ind) {
 		//updates heuristics after each search
 		//only for Adaptive A*
@@ -268,7 +271,7 @@ public class adaptiveastar {
 			robotMaze.board[temp.row][temp.col].hValue = g_sGoal - g_S; //updates heuristic on perceivedMaze
 		}
 	}
-	*/
+	
 	private boolean alreadyInOpenList(Cell x) {
 		int heapSize = this.openList.heapSize();
 		int cellKey = x.key;

@@ -1,64 +1,54 @@
 package gameGrid;
 
+import java.io.*;
+
 /**
  * Class for testing purpose
  * 
- * Authors: Peter Jeng and Seerat Aziz Homework Assignment 1 Introduction to
- * Artificial Intelligence Spring 2018
+ * Authors: Peter Jeng and Seerat Aziz 
+ * Homework Assignment 1 
+ * Introduction to Artificial Intelligence 
+ * Spring 2018
  */
+
 public class TestClass {
-
-	public static void main(String[] args) {
-		int i = 0;
-		double avg = 0;
-		Maze[] aMaze = new Maze[50];
-
-		while (i < 1000) {
-			Maze actual = new Maze();
-			actual.generateMaze();
-			
-//			actual.board[2][2].state = true;
-//			actual.board[2][3].state = true;			
-			actual.printMaze();
-
-			PerceivedMaze perceived = new PerceivedMaze();
-			perceived.calculateHeuristic(24, 24);
-			// test.printMaze();
-
-			RepeatedForwardAStar testAlgo = new RepeatedForwardAStar(actual, perceived);
-
-			testAlgo.start();
-			System.out.println("Counter: " + testAlgo.counter);
-			avg += testAlgo.counter;
-			i++;
-
+	public static void main(String[] args) throws FileNotFoundException {
+		//Generates and stores 50 mazes
+		Maze[] storedMazes = new Maze[50]; 
+		for (int i = 0; i < 50; i++) {
+			storedMazes[i] = new Maze();
+			storedMazes[i].generateMaze();
 		}
+		int i = 0; //while loop counter
 		
-		System.out.println("Average run time: " + avg / 50);
-
-		// for testing adaptiveastar class
-		// //now using running openlist with tiebreaker, solves some mazes & not all
-		// //still trying to figure out dead-end part and other random cases that dont
-		// work
-		// //need to add case in insertCell() about when a cell is already in the
-		// openList
-		// Maze maze1 = new Maze();
-		// //calculates heuristic for each cell
-		// maze1.calculateHeuristic(4, 4);
-		// maze1.generateMaze();
-		// /*manually coding the state of the maze
-		// maze1.board[0][2].state = true;
-		// maze1.board[1][2].state = true;
-		// maze1.board[2][2].state = true;
-		// maze1.board[3][2].state = true;
-		// maze1.board[4][2].state = true;
-		// */
-		// //prints out maze
-		// maze1.printMaze();
-		// System.out.print("\n");
-		// //testing out simpler aStar, does one iteration only
-		// adaptiveastar test = new adaptiveastar();
-		// test.aStar(maze1, 0, 0, 9, 9); //runs one A* search (no restarts)
-		//
+		File realMaze = new File("ActualMaze" + i +".txt");
+		FileOutputStream rmfos = new FileOutputStream(realMaze); 
+		PrintStream rm = new PrintStream(rmfos);
+		System.setOut(rm);
+		
+		//Repeated Forward A* - tiebreaker 1
+		PerceivedMaze perceived1 = new PerceivedMaze();
+		File pMaze = new File("Forward_PM_" + i + ".txt");
+		FileOutputStream pmfos1 = new FileOutputStream(pMaze);
+		PrintStream ps1 = new PrintStream(pmfos1);
+		System.setOut(ps1);
+		RepeatedForwardAStar test1 = new RepeatedForwardAStar(storedMazes[i],perceived1);
+		test1.start();
+		
+		//Repeated Forward A* - tiebreaker 2
+		PerceivedMaze perceived2 = new PerceivedMaze();
+		
+		//Repeated Backward A* - tiebreaker 1
+		PerceivedMaze perceived3 = new PerceivedMaze();
+		
+		//Adaptive A* - tiebreaker 1 
+		PerceivedMaze perceived4 = new PerceivedMaze();
+		File pMaze3 = new File("Adaptive_PM_" + i + ".txt");
+		FileOutputStream pmfos4 = new FileOutputStream(pMaze3);
+		PrintStream ps4 = new PrintStream(pmfos4);
+		System.setOut(ps4);
+		adaptiveastar test4 = new adaptiveastar(storedMazes[i],perceived4);
+		test4.start();
+	
 	}
 }
