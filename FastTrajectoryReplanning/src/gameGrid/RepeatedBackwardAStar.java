@@ -2,13 +2,13 @@ package gameGrid;
 
 import java.util.LinkedList;
 
-public class RepeatedForwardAStar {
+public class RepeatedBackwardAStar {
 	public PerceivedMaze robotMaze;
 	public BinaryHeap openList;
 	public LinkedList<Cell> closedList;
 	public LinkedList<Cell> traversalPath;
 	public Maze realMaze;
-	int numExpandedCell = 0;
+	int counter = 0;
 	
 	
 	/**
@@ -16,7 +16,7 @@ public class RepeatedForwardAStar {
 	 * @param realMaze actual maze with blocked and unblocked cells
 	 * @param perceivedMaze maze robot sees
 	 */
-	public RepeatedForwardAStar(Maze realMaze, PerceivedMaze perceivedMaze) {
+	public RepeatedBackwardAStar(Maze realMaze, PerceivedMaze perceivedMaze) {
 		this.openList = new BinaryHeap();
 		this.closedList = new LinkedList<Cell>();
 		this.robotMaze = perceivedMaze;
@@ -68,7 +68,6 @@ public class RepeatedForwardAStar {
 				bottom.gValue = robotMaze.current.gValue + 1;
 				bottom.fValue = bottom.gValue + bottom.hValue;
 				openList.insertCell(bottom, this.alreadyInOpenList(bottom));
-				
 				bottom.parent = robotMaze.current;
 			}
 			if (left != null && left.state == false && !closedList.contains(left)) {
@@ -85,7 +84,6 @@ public class RepeatedForwardAStar {
 			}
 
 			closedList.add(robotMaze.current);
-			numExpandedCell++;
 			openList.deleteCell(robotMaze.current);
 			
 			//if heap is empty, then that means there are no possible expansions left
@@ -161,6 +159,7 @@ public class RepeatedForwardAStar {
 		//takes a look around its surrounding for the first iteration of A*
 		updateSurrounding(robotMaze.current);
 		while(robotMaze.current.key != robotMaze.end.key) {
+			counter++;
 			if(computePath()) {
 				System.out.println("Planned path: ");
 
@@ -230,7 +229,7 @@ public class RepeatedForwardAStar {
 	/**
 	 * Implements a tie breaker using largest g-Value
 	 */
-	public Cell nextNodeInList() {
+	private Cell nextNodeInList() {
 		Cell result = this.openList.getCell(0);
 		int min = result.fValue;
 		Cell temp = new Cell();
