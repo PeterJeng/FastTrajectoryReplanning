@@ -31,6 +31,9 @@ public class RepeatedBackwardAStar {
 		this.robotMaze = perceivedMaze;
 		this.realMaze = realMaze;
 		this.traversalPath = new LinkedList<Cell>();
+		this.robotMaze.current = this.robotMaze.board[this.robotMaze.board.length - 1][this.robotMaze.board.length - 1];
+		this.robotMaze.start = this.robotMaze.board[this.robotMaze.board.length - 1][this.robotMaze.board.length - 1];
+		this.robotMaze.end = this.robotMaze.board[0][0];
 
 	}
 

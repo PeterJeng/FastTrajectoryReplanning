@@ -41,8 +41,8 @@ public class TestClass {
 			PrintStream ps1 = new PrintStream(pmfos1);
 			System.setOut(ps1);
 			RepeatedForwardAStar test1 = new RepeatedForwardAStar(storedMazes[i],perceived1);
-			expandedCell1[i] = test1.numExpandedCell;
 			test1.start();
+			expandedCell1[i] = test1.numExpandedCell;
 			
 			//Repeated Forward A* - tiebreaker 2
 			PerceivedMaze perceived2 = new PerceivedMaze();
@@ -52,8 +52,8 @@ public class TestClass {
 			PrintStream ps2 = new PrintStream(pmfos2);
 			System.setOut(ps2);
 			RepeatedForwardAStarV2 test2 = new RepeatedForwardAStarV2(storedMazes[i],perceived2);
-			expandedCell2[i] = test2.numExpandedCell;
 			test2.start();
+			expandedCell2[i] = test2.numExpandedCell;
 			
 			//Repeated Backward A* - tiebreaker 1
 			PerceivedMaze perceived3 = new PerceivedMaze();
@@ -63,8 +63,8 @@ public class TestClass {
 			PrintStream ps3 = new PrintStream(pmfos3);
 			System.setOut(ps3);
 			RepeatedBackwardAStar test3 = new RepeatedBackwardAStar(storedMazes[i],perceived3);
-			expandedCell3[i] = test3.numExpandedCell;
 			test3.start();
+			expandedCell3[i] = test3.numExpandedCell;
 			
 			//Adaptive A* - tiebreaker 1 
 			PerceivedMaze perceived4 = new PerceivedMaze();
@@ -74,12 +74,13 @@ public class TestClass {
 			PrintStream ps4 = new PrintStream(pmfos4);
 			System.setOut(ps4);
 			adaptiveastar test4 = new adaptiveastar(storedMazes[i],perceived4);
-			expandedCell4[i] = test4.numExpandedCell;
 			test4.start();
+			expandedCell4[i] = test4.numExpandedCell;
 			
 			i++; 
 		}
 		System.setOut(console); //restores printing to console for results 
+		
 		
 		//in order to print out the number of expanded cells for each algorithm
 		System.out.println("#Expanded Cells per Maze for Repeated Forward A*");
@@ -88,15 +89,15 @@ public class TestClass {
 		}
 		System.out.println("#Expanded Cells per Maze for Repeated Forward A* - version 2");
 		for (int m = 0; m < 50; m++) {
-			System.out.println(expandedCell1[m]);
+			System.out.println(expandedCell2[m]);
 		}
 		System.out.println("#Expanded Cells per Maze for Repeated Backward A*");
 		for (int m = 0; m < 50; m++) {
-			System.out.println(expandedCell1[m]);
+			System.out.println(expandedCell3[m]);
 		}
 		System.out.println("#Expanded Cells per Maze for Adaptive A*");
 		for (int m = 0; m < 50; m++) {
-			System.out.println(expandedCell1[m]);
+			System.out.println(expandedCell4[m]);
 		}
 	
 	}
