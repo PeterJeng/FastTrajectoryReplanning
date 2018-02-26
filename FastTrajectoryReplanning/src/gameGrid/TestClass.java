@@ -13,6 +13,7 @@ import java.io.*;
 
 public class TestClass {
 	public static void main(String[] args) throws FileNotFoundException {
+		
 		//Generates and stores 50 mazes
 		Maze[] storedMazes = new Maze[50]; 
 		for (int i = 0; i < 50; i++) {
@@ -57,7 +58,7 @@ public class TestClass {
 			
 			//Repeated Backward A* - tiebreaker 1
 			PerceivedMaze perceived3 = new PerceivedMaze();
-			perceived3.calculateHeuristic(100, 100);
+			perceived3.calculateHeuristic(0, 0);
 			File pMaze2 = new File("Backward_PM_" + i + ".txt");
 			FileOutputStream pmfos3 = new FileOutputStream(pMaze2);
 			PrintStream ps3 = new PrintStream(pmfos3);
