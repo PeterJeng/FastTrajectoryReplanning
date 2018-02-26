@@ -1,5 +1,14 @@
 package gameGrid;
 
+/**
+ * Class for Repeated Backward A*
+ * 
+ * Authors: Peter Jeng and Seerat Aziz 
+ * Homework Assignment 1 
+ * Introduction to Artificial Intelligence 
+ * Spring 2018
+ */
+
 import java.util.LinkedList;
 
 public class RepeatedBackwardAStar {
@@ -8,7 +17,7 @@ public class RepeatedBackwardAStar {
 	public LinkedList<Cell> closedList;
 	public LinkedList<Cell> traversalPath;
 	public Maze realMaze;
-	int counter = 0;
+	int numExpandedCell = 0;
 	
 	
 	/**
@@ -84,6 +93,7 @@ public class RepeatedBackwardAStar {
 			}
 
 			closedList.add(robotMaze.current);
+			numExpandedCell++;
 			openList.deleteCell(robotMaze.current);
 			
 			//if heap is empty, then that means there are no possible expansions left
@@ -143,6 +153,8 @@ public class RepeatedBackwardAStar {
 				
 				return;
 			}
+			//ADDED - marks traversed cell as visited 
+			robotMaze.board[cellPtr.row][cellPtr.col].visited = true; 
 			
 			//look at the surroundings of the current cell and update if there is anything blocked
 			updateSurrounding(cellPtr);
@@ -159,7 +171,6 @@ public class RepeatedBackwardAStar {
 		//takes a look around its surrounding for the first iteration of A*
 		updateSurrounding(robotMaze.current);
 		while(robotMaze.current.key != robotMaze.end.key) {
-			counter++;
 			if(computePath()) {
 				System.out.println("Planned path: ");
 
@@ -172,11 +183,15 @@ public class RepeatedBackwardAStar {
 				System.out.println();
 				
 				traverseMaze();
+				System.out.println(); //ADDED
+				robotMaze.printMaze(); //ADDED
 				traversalPath.clear();
 				
 				System.out.println();
 			} 
 			else {
+				System.out.println(); //ADDED
+				robotMaze.printMaze(); //ADDED
 				System.out.println("NO SOLUTION");
 				break;
 			}		

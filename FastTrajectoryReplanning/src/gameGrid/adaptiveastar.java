@@ -17,7 +17,7 @@ public class adaptiveastar {
 	public LinkedList<Cell> closedList;
 	public LinkedList<Cell> traversalPath;
 	public Maze realMaze;
-	int counter = 0;
+	int numExpandedCell = 0;
 	
 	
 	/**
@@ -94,7 +94,7 @@ public class adaptiveastar {
 				right.parent = robotMaze.current;
 			}
 			closedList.add(robotMaze.current); 
-			
+			numExpandedCell++;
 			//heuristic of cell added to closed list is updated
 			//int oldHVal = robotMaze.current.hValue; 
 			//robotMaze.board[robotMaze.current.row][robotMaze.current.col].hValue = g_sGoal - oldHVal; //g(s_goal) - g(s)
@@ -168,7 +168,6 @@ public class adaptiveastar {
 		//takes a look around its surrounding for the first iteration of A*
 		updateSurrounding(robotMaze.current);
 		while(robotMaze.current.key != robotMaze.end.key) {
-			counter++;
 			if(computePath()) {
 				System.out.println("Planned path: ");
 
